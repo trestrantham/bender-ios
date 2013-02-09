@@ -1,0 +1,174 @@
+<?xml version='1.0'?>
+<signatures version='1.0'>
+<enum name='SVInfiniteScrollingStateAll' value='10'/>
+<enum name='SVInfiniteScrollingStateLoading' value='2'/>
+<enum name='SVInfiniteScrollingStateStopped' value='0'/>
+<enum name='SVInfiniteScrollingStateTriggered' value='1'/>
+<enum name='SVPullToRefreshStateAll' value='10'/>
+<enum name='SVPullToRefreshStateLoading' value='2'/>
+<enum name='SVPullToRefreshStateStopped' value='0'/>
+<enum name='SVPullToRefreshStateTriggered' value='1'/>
+<class name='SVInfiniteScrollingView'>
+<method selector='activityIndicatorViewStyle'>
+<retval declared_type='UIActivityIndicatorViewStyle' type='i'/>
+</method>
+<method selector='enabled'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='setActivityIndicatorViewStyle:'>
+<arg index='0' name='activityIndicatorViewStyle' declared_type='UIActivityIndicatorViewStyle' type='i'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setCustomView:forState:'>
+<arg index='0' name='view' declared_type='UIView*' type='@'/>
+<arg index='1' name='state' declared_type='SVInfiniteScrollingState' type='I'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setEnabled:'>
+<arg index='0' name='enabled' declared_type='BOOL' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='startAnimating'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='state'>
+<retval declared_type='SVInfiniteScrollingState' type='I'/>
+</method>
+<method selector='stopAnimating'>
+<retval declared_type='void' type='v'/>
+</method>
+</class>
+<class name='SVPullToRefreshView'>
+<method selector='activityIndicatorViewStyle'>
+<retval declared_type='UIActivityIndicatorViewStyle' type='i'/>
+</method>
+<method selector='arrowColor'>
+<retval declared_type='UIColor*' type='@'/>
+</method>
+<method selector='dateFormatter'>
+<retval declared_type='NSDateFormatter*' type='@'/>
+</method>
+<method selector='dateLabel'>
+<retval declared_type='UILabel*' type='@'/>
+</method>
+<method selector='lastUpdatedDate'>
+<retval declared_type='NSDate*' type='@'/>
+</method>
+<method selector='setActivityIndicatorViewStyle:'>
+<arg index='0' name='activityIndicatorViewStyle' declared_type='UIActivityIndicatorViewStyle' type='i'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setArrowColor:'>
+<arg index='0' name='arrowColor' declared_type='UIColor*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setCustomView:forState:'>
+<arg index='0' name='view' declared_type='UIView*' type='@'/>
+<arg index='1' name='state' declared_type='SVPullToRefreshState' type='I'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDateFormatter:'>
+<arg index='0' name='dateFormatter' declared_type='NSDateFormatter*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setDateLabel:'>
+<arg index='0' name='dateLabel' declared_type='UILabel*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setLastUpdatedDate:'>
+<arg index='0' name='lastUpdatedDate' declared_type='NSDate*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setSubtitle:forState:'>
+<arg index='0' name='subtitle' declared_type='NSString*' type='@'/>
+<arg index='1' name='state' declared_type='SVPullToRefreshState' type='I'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setSubtitleLabel:'>
+<arg index='0' name='subtitleLabel' declared_type='UILabel*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setTextColor:'>
+<arg index='0' name='textColor' declared_type='UIColor*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setTitle:forState:'>
+<arg index='0' name='title' declared_type='NSString*' type='@'/>
+<arg index='1' name='state' declared_type='SVPullToRefreshState' type='I'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setTitleLabel:'>
+<arg index='0' name='titleLabel' declared_type='UILabel*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='startAnimating'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='state'>
+<retval declared_type='SVPullToRefreshState' type='I'/>
+</method>
+<method selector='stopAnimating'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='subtitleLabel'>
+<retval declared_type='UILabel*' type='@'/>
+</method>
+<method selector='textColor'>
+<retval declared_type='UIColor*' type='@'/>
+</method>
+<method selector='titleLabel'>
+<retval declared_type='UILabel*' type='@'/>
+</method>
+<method selector='triggerRefresh'>
+<retval declared_type='void' type='v'/>
+</method>
+</class>
+<class name='UIScrollView'>
+<method selector='addInfiniteScrollingWithActionHandler:'>
+<arg function_pointer='true' index='0' name='actionHandler' declared_type='void (^)(void)' type='@?'>
+<retval declared_type='void' type='v'/>
+</arg>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='addPullToRefreshWithActionHandler:'>
+<arg function_pointer='true' index='0' name='actionHandler' declared_type='void (^)(void)' type='@?'>
+<retval declared_type='void' type='v'/>
+</arg>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='infiniteScrollingView'>
+<retval declared_type='SVInfiniteScrollingView*' type='@'/>
+</method>
+<method selector='pullToRefreshView'>
+<retval declared_type='SVPullToRefreshView*' type='@'/>
+</method>
+<method selector='setInfiniteScrollingView:'>
+<arg index='0' name='infiniteScrollingView' declared_type='SVInfiniteScrollingView*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setPullToRefreshView:'>
+<arg index='0' name='pullToRefreshView' declared_type='SVPullToRefreshView*' type='@'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setShowsInfiniteScrolling:'>
+<arg index='0' name='showsInfiniteScrolling' declared_type='BOOL' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='setShowsPullToRefresh:'>
+<arg index='0' name='showsPullToRefresh' declared_type='BOOL' type='B'/>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='showsInfiniteScrolling'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='showsPullToRefresh'>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='triggerInfiniteScrolling'>
+<retval declared_type='void' type='v'/>
+</method>
+<method selector='triggerPullToRefresh'>
+<retval declared_type='void' type='v'/>
+</method>
+</class>
+</signatures>
