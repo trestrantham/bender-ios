@@ -1,6 +1,8 @@
 class NotificationController
 	def initWithNavigationController(navigation_controller)
+		self.init
 		@navigation_controller = navigation_controller
+		self
 	end
 
 	def listen
@@ -16,7 +18,7 @@ class NotificationController
 
 		if @navigation_controller.visibleViewController.class.to_s != "PourController"
 			puts "EventController > pour_updated > pushing PourController"
-			pour_controller = PourController.alloc.initWithTap(pour["beer_tap_id"].to_i, user: pour["user_id"].to_i)
+			pour_controller = PourController.alloc.initWithBeerTap(pour["beer_tap_id"].to_i, user: pour["user_id"].to_i)
 			@navigation_controller.popToRootViewControllerAnimated false
 			@navigation_controller.pushViewController(pour_controller, animated: true)
 		else

@@ -13,6 +13,10 @@ class AppDelegate
 		@faye = FayeListener.alloc.initWithNavigationController(@navigation_controller)
 		@faye.listen
 
+    # Setup NotificationController
+    @notification_controller = NotificationController.alloc.initWithNavigationController(@navigation_controller)
+    @notification_controller.listen
+
     @window.rootViewController = @navigation_controller
     @window.makeKeyAndVisible
     true
