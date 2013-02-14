@@ -14,4 +14,4 @@ nbproject
 .eprj
 .sass-cache
 .idea
-vender/*/build-iPhoneSimulator
+/vendor/*/build-iPhoneSimulator/
