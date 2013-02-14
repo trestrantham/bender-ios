@@ -66,7 +66,7 @@ class UserController < UIViewController
 
 	def tableView(tableView, didSelectRowAtIndexPath:indexPath)
 		user = @users[indexPath.row]
-		pour_controller = PourController.alloc.initWithTap(@beer_tap, user: user)
+		pour_controller = PourController.alloc.initWithBeerTap(@beer_tap, user: user)
 		self.navigationController.pushViewController(pour_controller, animated: true)
 	end
 

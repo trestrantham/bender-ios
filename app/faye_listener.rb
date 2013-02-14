@@ -15,6 +15,8 @@ class FayeListener
     @faye.subscribeToChannel "/pour/update"
     @faye.subscribeToChannel "/user"
     @faye.delegate = self
+
+    self
   end
 
   def listen
