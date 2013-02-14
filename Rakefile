@@ -13,8 +13,8 @@ Motion::Project::App.setup do |app|
 
 	app.pods do
 		pod 'SVPullToRefresh'
-		#pod 'JSONKit'
 	end
 
-	app.vendor_project('vendor/FayeObjc', :static, cflags: '-fobjc-arc')
+	app.vendor_project 'vendor/FayeObjc', :static, cflags: '-fobjc-arc'
+	app.vendor_project 'vendor/JSONKit', :static
 end
