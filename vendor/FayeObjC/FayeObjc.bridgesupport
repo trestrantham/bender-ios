@@ -1,0 +1,717 @@
+<?xml version='1.0'?>
+<signatures version='1.0'>
+<opaque type='^{JKParseState=}' name='JKParseState'/>
+<constant const='true' type='@' name='SRWebSocketErrorDomain' declared_type='NSString*'/>
+<constant type='i' name='fayeStates' declared_type='enum _fayeStates'/>
+<string_constant value='/meta/connect' nsstring='true' name='CONNECT_CHANNEL'/>
+<string_constant value='/meta/disconnect' nsstring='true' name='DISCONNECT_CHANNEL'/>
+<string_constant value='/meta/handshake' nsstring='true' name='HANDSHAKE_CHANNEL'/>
+<string_constant value='/meta/subscribe' nsstring='true' name='SUBSCRIBE_CHANNEL'/>
+<string_constant value='/meta/unsubscribe' nsstring='true' name='UNSUBSCRIBE_CHANNEL'/>
+<enum value='0' name='Date'/>
+<enum value='1' name='DateTime'/>
+<enum value='1' name='JKParseOptionComments'/>
+<enum value='4' name='JKParseOptionLooseUnicode'/>
+<enum value='0' name='JKParseOptionNone'/>
+<enum value='8' name='JKParseOptionPermitTextAfterValidJSON'/>
+<enum value='0' name='JKParseOptionStrict'/>
+<enum value='2' name='JKParseOptionUnicodeNewlines'/>
+<enum value='15' name='JKParseOptionValidFlags'/>
+<enum value='2' name='JKSerializeOptionEscapeUnicode'/>
+<enum value='0' name='JKSerializeOptionNone'/>
+<enum value='1' name='JKSerializeOptionPretty'/>
+<enum value='3' name='JKSerializeOptionValidFlags'/>
+<enum value='1' name='JSONKIT_VERSION_MAJOR'/>
+<enum value='4' name='JSONKIT_VERSION_MINOR'/>
+<enum value='3' name='SR_CLOSED'/>
+<enum value='2' name='SR_CLOSING'/>
+<enum value='0' name='SR_CONNECTING'/>
+<enum value='1' name='SR_OPEN'/>
+<enum value='3' name='kFayeConnected'/>
+<enum value='2' name='kFayeDisconnected'/>
+<enum value='1' name='kWebSocketConnected'/>
+<enum value='0' name='kWebSocketDisconnected'/>
+<function name='b64_ntop'>
+<arg const='true' type='*' name='src' declared_type='u_char*'/>
+<arg type='L' name='srclength' declared_type='size_t'/>
+<arg type='*' name='target' declared_type='char*'/>
+<arg type='L' name='targsize' declared_type='size_t'/>
+<retval type='i' declared_type='int'/>
+</function>
+<function name='b64_pton'>
+<arg const='true' type='*' name='src' declared_type='char*'/>
+<arg type='*' name='target' declared_type='u_char*'/>
+<arg type='L' name='targsize' declared_type='size_t'/>
+<retval type='i' declared_type='int'/>
+</function>
+<class name='FayeClient'>
+<method selector='activeSubChannel'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='connectToServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='connectToServerWithExt:'>
+<arg index='0' type='@' name='extension' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='connectionInitiated'>
+<retval type='B' declared_type='BOOL'/>
+</method>
+<method selector='delegate'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='disconnectFromServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='fayeClientId'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='fayeURLString'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='initWithURLString:channel:'>
+<arg index='0' type='@' name='aFayeURLString' declared_type='NSString*'/>
+<arg index='1' type='@' name='channel' declared_type='NSString*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='isSubscribedToChannel:'>
+<arg index='0' type='@' name='channel' declared_type='NSString*'/>
+<retval type='B' declared_type='BOOL'/>
+</method>
+<method selector='resubscribeOpenSubs'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='sendMessage:onChannel:'>
+<arg index='0' type='@' name='messageDict' declared_type='NSDictionary*'/>
+<arg index='1' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='sendMessage:onChannel:withExt:'>
+<arg index='0' type='@' name='messageDict' declared_type='NSDictionary*'/>
+<arg index='1' type='@' name='channel' declared_type='NSString*'/>
+<arg index='2' type='@' name='extension' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setActiveSubChannel:'>
+<arg index='0' type='@' name='activeSubChannel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setConnectionInitiated:'>
+<arg index='0' type='B' name='connectionInitiated' declared_type='BOOL'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setDelegate:'>
+<arg index='0' type='@' name='delegate' declared_type='id'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setFayeClientId:'>
+<arg index='0' type='@' name='fayeClientId' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setFayeURLString:'>
+<arg index='0' type='@' name='fayeURLString' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setWebSocket:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setWebSocketConnected:'>
+<arg index='0' type='B' name='webSocketConnected' declared_type='BOOL'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='subscribeToChannel:'>
+<arg index='0' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='unsubscribeFromChannel:'>
+<arg index='0' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='webSocket'>
+<retval type='@' declared_type='SRWebSocket*'/>
+</method>
+<method selector='webSocketConnected'>
+<retval type='B' declared_type='BOOL'/>
+</method>
+</class>
+<class name='FayeMessage'>
+<method selector='advice'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method selector='authSuccessful'>
+<retval type='@' declared_type='NSNumber*'/>
+</method>
+<method selector='channel'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='clientId'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='data'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method selector='error'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='ext'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method selector='fayeId'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='initWithDict:'>
+<arg index='0' type='@' name='dict' declared_type='NSDictionary*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='minimumVersion'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='setAdvice:'>
+<arg index='0' type='@' name='advice' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setAuthSuccessful:'>
+<arg index='0' type='@' name='authSuccessful' declared_type='NSNumber*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setChannel:'>
+<arg index='0' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setClientId:'>
+<arg index='0' type='@' name='clientId' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setData:'>
+<arg index='0' type='@' name='data' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setError:'>
+<arg index='0' type='@' name='error' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setExt:'>
+<arg index='0' type='@' name='ext' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setFayeId:'>
+<arg index='0' type='@' name='fayeId' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setMinimumVersion:'>
+<arg index='0' type='@' name='minimumVersion' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setSubscription:'>
+<arg index='0' type='@' name='subscription' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setSuccessful:'>
+<arg index='0' type='@' name='successful' declared_type='NSNumber*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setSupportedConnectionTypes:'>
+<arg index='0' type='@' name='supportedConnectionTypes' declared_type='NSArray*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setTimestamp:'>
+<arg index='0' type='@' name='timestamp' declared_type='NSDate*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setVersion:'>
+<arg index='0' type='@' name='version' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='subscription'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='successful'>
+<retval type='@' declared_type='NSNumber*'/>
+</method>
+<method selector='supportedConnectionTypes'>
+<retval type='@' declared_type='NSArray*'/>
+</method>
+<method selector='timestamp'>
+<retval type='@' declared_type='NSDate*'/>
+</method>
+<method selector='version'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='JSONDecoder'>
+<method selector='clearCache'>
+<retval type='v' declared_type='void'/>
+</method>
+<method class_method='true' selector='decoder'>
+<retval type='@' declared_type='id'/>
+</method>
+<method class_method='true' selector='decoderWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='initWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectWithData:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectWithData:error:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectWithUTF8String:length:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='I' name='length' declared_type='NSUInteger'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectWithUTF8String:length:error:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='I' name='length' declared_type='NSUInteger'/>
+<arg index='2' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectWithData:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectWithData:error:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectWithUTF8String:length:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='I' name='length' declared_type='NSUInteger'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectWithUTF8String:length:error:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='I' name='length' declared_type='NSUInteger'/>
+<arg index='2' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='parseJSONData:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='parseJSONData:error:'>
+<arg index='0' type='@' name='jsonData' declared_type='NSData*'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='parseUTF8String:length:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='L' name='length' declared_type='size_t'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='parseUTF8String:length:error:'>
+<arg const='true' index='0' type='*' name='string' declared_type='unsigned char*'/>
+<arg index='1' type='L' name='length' declared_type='size_t'/>
+<arg index='2' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+</class>
+<class name='NSArray'>
+<method selector='JSONData'>
+<retval type='@' declared_type='NSData*'/>
+</method>
+<method selector='JSONDataWithOptions:error:'>
+<arg index='0' type='I' name='serializeOptions' declared_type='JKSerializeOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='NSData*'/>
+</method>
+<method selector='JSONString'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='JSONStringWithOptions:error:'>
+<arg index='0' type='I' name='serializeOptions' declared_type='JKSerializeOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='NSData'>
+<method selector='SR_stringByBase64Encoding'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method class_method='true' selector='deserialize:'>
+<arg index='0' type='@' name='value' declared_type='id'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='mutableObjectFromJSONData'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectFromJSONDataWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectFromJSONDataWithParseOptions:error:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONData'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONDataWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONDataWithParseOptions:error:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='serialize'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='NSDate'>
+<method selector='convertToUTC'>
+<retval type='@' declared_type='NSDate*'/>
+</method>
+<method class_method='true' selector='deserialize:'>
+<arg index='0' type='@' name='value' declared_type='id'/>
+<retval type='@' declared_type='NSDate*'/>
+</method>
+<method selector='serialize'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='NSDictionary'>
+<method selector='JSONData'>
+<retval type='@' declared_type='NSData*'/>
+</method>
+<method selector='JSONDataWithOptions:error:'>
+<arg index='0' type='I' name='serializeOptions' declared_type='JKSerializeOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='NSData*'/>
+</method>
+<method selector='JSONString'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='JSONStringWithOptions:error:'>
+<arg index='0' type='I' name='serializeOptions' declared_type='JKSerializeOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method class_method='true' selector='translationForKey:withTranslations:'>
+<arg index='0' type='@' name='key' declared_type='NSString*'/>
+<arg index='1' type='@' name='keyTranslations' declared_type='NSDictionary*'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='NSMutableURLRequest'>
+<method selector='SR_SSLPinnedCertificates'>
+<retval type='@' declared_type='NSArray*'/>
+</method>
+<method selector='setSR_SSLPinnedCertificates:'>
+<arg index='0' type='@' name='SR_SSLPinnedCertificates' declared_type='NSArray*'/>
+<retval type='v' declared_type='void'/>
+</method>
+</class>
+<class name='NSObject'>
+<method selector='className'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='connectedToServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='connectionFailed'>
+<retval type='v' declared_type='void'/>
+</method>
+<method class_method='true' selector='deserialize:'>
+<arg index='0' type='@' name='value' declared_type='id'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='disconnectedFromServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='fayeClientError:'>
+<arg index='0' type='@' name='error' declared_type='NSError*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='messageReceived:channel:'>
+<arg index='0' type='@' name='messageDict' declared_type='NSDictionary*'/>
+<arg index='1' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='properties'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method class_method='true' selector='propertyClass:'>
+<arg index='0' type='@' name='className' declared_type='NSString*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method class_method='true' selector='propertyNames'>
+<retval type='@' declared_type='NSArray*'/>
+</method>
+<method class_method='true' selector='propertyNamesAndTypes'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method selector='serialize'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='setProperties:'>
+<arg index='0' type='@' name='overrideProperties' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='subscriptionFailedWithError:'>
+<arg index='0' type='@' name='error' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='webSocket:didCloseWithCode:reason:wasClean:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='i' name='code' declared_type='NSInteger'/>
+<arg index='2' type='@' name='reason' declared_type='NSString*'/>
+<arg index='3' type='B' name='wasClean' declared_type='BOOL'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='webSocket:didFailWithError:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='@' name='error' declared_type='NSError*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='webSocket:didReceiveMessage:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='@' name='message' declared_type='id'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='webSocketDidOpen:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<retval type='v' declared_type='void'/>
+</method>
+</class>
+<class name='NSRunLoop'>
+<method class_method='true' selector='SR_networkRunLoop'>
+<retval type='@' declared_type='NSRunLoop*'/>
+</method>
+</class>
+<class name='NSString'>
+<method selector='camelize'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='dasherize'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method class_method='true' selector='deserialize:'>
+<arg index='0' type='@' name='value' declared_type='id'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='mutableObjectFromJSONString'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectFromJSONStringWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='mutableObjectFromJSONStringWithParseOptions:error:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONString'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONStringWithParseOptions:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='objectFromJSONStringWithParseOptions:error:'>
+<arg index='0' type='I' name='parseOptionFlags' declared_type='JKParseOptionFlags'/>
+<arg index='1' type='^@' name='error' declared_type='NSError**'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='titleize'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='toClassName'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='underscore'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+</class>
+<class name='NSURLRequest'>
+<method selector='SR_SSLPinnedCertificates'>
+<retval type='@' declared_type='NSArray*'/>
+</method>
+</class>
+<class name='ObjectiveResourceDateFormatter'>
+<method class_method='true' selector='formatDate:'>
+<arg index='0' type='@' name='date' declared_type='NSDate*'/>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method class_method='true' selector='parseDate:'>
+<arg index='0' type='@' name='dateString' declared_type='NSString*'/>
+<retval type='@' declared_type='NSDate*'/>
+</method>
+<method class_method='true' selector='parseDateTime:'>
+<arg index='0' type='@' name='dateTimeString' declared_type='NSString*'/>
+<retval type='@' declared_type='NSDate*'/>
+</method>
+<method class_method='true' selector='setDateFormatString:'>
+<arg index='0' type='@' name='format' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method class_method='true' selector='setDateTimeFormatString:'>
+<arg index='0' type='@' name='format' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method class_method='true' selector='setSerializeFormat:'>
+<arg index='0' type='i' name='dateFormat' declared_type='ORSDateFormat'/>
+<retval type='v' declared_type='void'/>
+</method>
+</class>
+<class name='SRWebSocket'>
+<method selector='close'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='closeWithCode:reason:'>
+<arg index='0' type='i' name='code' declared_type='NSInteger'/>
+<arg index='1' type='@' name='reason' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='delegate'>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='initWithURL:'>
+<arg index='0' type='@' name='url' declared_type='NSURL*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='initWithURL:protocols:'>
+<arg index='0' type='@' name='url' declared_type='NSURL*'/>
+<arg index='1' type='@' name='protocols' declared_type='NSArray*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='initWithURLRequest:'>
+<arg index='0' type='@' name='request' declared_type='NSURLRequest*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='initWithURLRequest:protocols:'>
+<arg index='0' type='@' name='request' declared_type='NSURLRequest*'/>
+<arg index='1' type='@' name='protocols' declared_type='NSArray*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method selector='open'>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='protocol'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method selector='readyState'>
+<retval type='i' declared_type='SRReadyState'/>
+</method>
+<method selector='scheduleInRunLoop:forMode:'>
+<arg index='0' type='@' name='aRunLoop' declared_type='NSRunLoop*'/>
+<arg index='1' type='@' name='mode' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='send:'>
+<arg index='0' type='@' name='data' declared_type='id'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setDelegate:'>
+<arg index='0' type='@' name='delegate' declared_type='id'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setDelegateDispatchQueue:'>
+<arg index='0' type='@' name='queue' declared_type='dispatch_queue_t'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='setDelegateOperationQueue:'>
+<arg index='0' type='@' name='queue' declared_type='NSOperationQueue*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='unscheduleFromRunLoop:forMode:'>
+<arg index='0' type='@' name='aRunLoop' declared_type='NSRunLoop*'/>
+<arg index='1' type='@' name='mode' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method selector='url'>
+<retval type='@' declared_type='NSURL*'/>
+</method>
+</class>
+<informal_protocol name='FayeClientDelegate'>
+<method type='v8@0:4' selector='connectedToServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v8@0:4' selector='connectionFailed'>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v8@0:4' selector='disconnectedFromServer'>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v12@0:4@8' selector='fayeClientError:'>
+<arg index='0' type='@' name='error' declared_type='NSError*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v16@0:4@8@12' selector='messageReceived:channel:'>
+<arg index='0' type='@' name='messageDict' declared_type='NSDictionary*'/>
+<arg index='1' type='@' name='channel' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v12@0:4@8' selector='subscriptionFailedWithError:'>
+<arg index='0' type='@' name='error' declared_type='NSString*'/>
+<retval type='v' declared_type='void'/>
+</method>
+</informal_protocol>
+<informal_protocol name='PropertySupport'>
+<method type='@8@0:4' selector='className'>
+<retval type='@' declared_type='NSString*'/>
+</method>
+<method type='@8@0:4' selector='properties'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method class_method='true' type='@12@0:4@8' selector='propertyClass:'>
+<arg index='0' type='@' name='className' declared_type='NSString*'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method class_method='true' type='@8@0:4' selector='propertyNames'>
+<retval type='@' declared_type='NSArray*'/>
+</method>
+<method class_method='true' type='@8@0:4' selector='propertyNamesAndTypes'>
+<retval type='@' declared_type='NSDictionary*'/>
+</method>
+<method type='v12@0:4@8' selector='setProperties:'>
+<arg index='0' type='@' name='overrideProperties' declared_type='NSDictionary*'/>
+<retval type='v' declared_type='void'/>
+</method>
+</informal_protocol>
+<informal_protocol name='SRWebSocketDelegate'>
+<method type='v24@0:4@8i12@16B20' selector='webSocket:didCloseWithCode:reason:wasClean:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='i' name='code' declared_type='NSInteger'/>
+<arg index='2' type='@' name='reason' declared_type='NSString*'/>
+<arg index='3' type='B' name='wasClean' declared_type='BOOL'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v16@0:4@8@12' selector='webSocket:didFailWithError:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='@' name='error' declared_type='NSError*'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v16@0:4@8@12' selector='webSocket:didReceiveMessage:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<arg index='1' type='@' name='message' declared_type='id'/>
+<retval type='v' declared_type='void'/>
+</method>
+<method type='v12@0:4@8' selector='webSocketDidOpen:'>
+<arg index='0' type='@' name='webSocket' declared_type='SRWebSocket*'/>
+<retval type='v' declared_type='void'/>
+</method>
+</informal_protocol>
+<informal_protocol name='Serialize'>
+<method class_method='true' type='@12@0:4@8' selector='deserialize:'>
+<arg index='0' type='@' name='value' declared_type='id'/>
+<retval type='@' declared_type='id'/>
+</method>
+<method type='@8@0:4' selector='serialize'>
+<retval type='@' declared_type='id'/>
+</method>
+</informal_protocol>
+</signatures>

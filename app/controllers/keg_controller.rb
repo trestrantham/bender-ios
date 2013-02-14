@@ -33,7 +33,7 @@ class KegController < UIViewController
   end
 
 	def loadData
-		BW::HTTP.get("http://bender.dev/admin/kegs.json") do |response|
+		BW::HTTP.get("#{App::Persistence[:api_url]}/admin/kegs.json") do |response|
 			json = p response.body.to_str
 			@kegs = BW::JSON.parse json
 			
