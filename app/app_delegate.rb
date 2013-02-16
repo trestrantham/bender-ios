@@ -29,17 +29,3 @@ class AppDelegate
   end
 
 end
-
-module BubbleWrap
-  module App
-    module_function
-
-    def current_user
-      App::Persistence[:current_user]
-    end
-
-    def current_user=(user)
-      App::Persistence[:current_user] = user
-    end
-  end
-end
