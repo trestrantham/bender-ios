@@ -51,7 +51,7 @@ class BeerTapController < UIViewController
 
 	def tableView(tableView, didSelectRowAtIndexPath:indexPath)
 		beer_tap = @taps[indexPath.row]
-		user_controller = UserController.alloc.initWithTap(beer_tap)
+		user_controller = UserController.alloc.initWithBeerTap(beer_tap)
 		self.navigationController.pushViewController(user_controller, animated:true)
 	end
 end

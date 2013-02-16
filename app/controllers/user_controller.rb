@@ -1,6 +1,6 @@
 class UserController < UIViewController
-	def initWithTap(beer_tap)
-		puts "UserController > initWithTap: beer_tap: #{beer_tap}"
+	def initWithBeerTap(beer_tap)
+		puts "UserController > initWithBeerTap: beer_tap: #{beer_tap}"
 		self.init
 
 		if beer_tap.is_a? Hash
@@ -66,6 +66,8 @@ class UserController < UIViewController
 
 	def tableView(tableView, didSelectRowAtIndexPath:indexPath)
 		user = @users[indexPath.row]
+		puts "UserController > tableView didSelectRowAtIndexPath > user: #{user}"
+		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: user)
 		pour_controller = PourController.alloc.initWithBeerTap(@beer_tap, user: user)
 		self.navigationController.pushViewController(pour_controller, animated: true)
 	end
