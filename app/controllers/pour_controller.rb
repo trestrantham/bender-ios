@@ -25,8 +25,6 @@ class PourController < UIViewController
 		@last_update = nil
 		@current_pour = nil
 
-		#App.notification_center.addObserver(self, selector:"update_pour:", name:"PourUpdateNotification", object:nil)
-
 		self
 	end
 
@@ -57,59 +55,9 @@ class PourController < UIViewController
 			end_pour
 		end
 
-    # loadData
     start_pour
   end
 
-	def loadData
-		puts "PourController > loadData: Loading data..."
-		puts "PourController > loadData: @beer_tap: #{@beer_tap}"
-		puts "PourController > loadData: @user: #{@user}"
-		data = {beer_tap_id: @beer_tap["id"].to_i, user_id: @user["id"].to_i}
-		BW::HTTP.post("#{App::Persistence[:api_url]}/pours", {payload: data}) do |response|
-			json = p response.body.to_str
-			@pour = BW::JSON.parse json
-			
-			#@table.reloadData
-			#@table.pullToRefreshView.stopAnimating
-			@pour_volume_field.text = @pour[:volume]
-			#puts @pour
-			poll_for_data
-		end
-	end
-
-	def poll_for_data
-		puts "PourController > poll_for_data: Polling for data..."
-		#timer = BubbleWrap::Reactor.add_periodic_timer 0.5 do
-			puts "PourController > poll_for_data: GETting data..."
-			BW::HTTP.get("#{App::Persistence[:api_url]}/pours/#{@pour[:id]}.json") do |response|
-				puts "PourController > poll_for_data: Got a response!"
-				json = p response.body.to_str
-				@pour = BW::JSON.parse json
-			
-				#@table.reloadData
-				#@table.pullToRefreshView.stopAnimating
-				@pour_volume_field.text = @pour[:volume].to_str
-				#puts @pour[:updated_at].to_str
-				#puts Time.iso8601(@pour[:updated_at].to_str)
-				#puts @pour
-				if (parse_date(@pour[:updated_at].to_str) + POUR_TIMEOUT) > Time.now
-					puts 'TRUE!'
-				else
-					puts 'FALSE =('
-				end
-
-				if !@pour_complete && (parse_date(@pour[:updated_at].to_str) + POUR_TIMEOUT) > Time.now
-					EM.add_timer 0.5 do
-						poll_for_data
-					end
-				else
-					end_pour
-				end
-				#sleep 0.5 && poll_for_data if (Time.iso8601(@pour[:updated_at].to_str) + 5) > Time.now #|| EM.cancel_timer(timer)
-			end
-		#end
-	end
 
 	def start_pour
 		@pour_status.enabled = true
@@ -117,6 +65,7 @@ class PourController < UIViewController
 	end
 
 	def update_pour(pour)
+		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: nil)
 		start_pour
 		@current_pour = pour
 
