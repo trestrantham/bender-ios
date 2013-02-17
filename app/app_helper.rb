@@ -16,3 +16,9 @@ module AppHelper
 		App::Persistence[:current_user] = user
 	end
 end
+
+class NSMutableDictionary
+	def symbolize!
+		replace(Hash[self.map{|(k,v)| [k.to_sym,v]}])
+	end
+end
