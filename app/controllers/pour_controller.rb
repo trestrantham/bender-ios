@@ -97,16 +97,21 @@ class PourController < UIViewController
 	def end_pour
 		puts ''
 		puts "PourController > end_pour"
+		puts "PourController > end_pour > @current_pour: #{@current_pour}"
+		
+		if true # @current_pour[:ticks].to_i > 0
+			pour = {pour: {user_id: @current_pour[:user_id], change_type: "completed"}}
+			puts "PourController > end_pour > pour: #{pour}"
+			BW::HTTP.put("#{App::Persistence[:api_url]}/pours/#{@current_pour[:id]}.json", {payload: BW::JSON.generate(pour)}) do |response|
+				# TODO(Tres): Handle failure
+				pour = BW::JSON.parse response.body
+				puts "PourController > end_pour > PUT > pour: #{pour}"
+			end
+		end
+
 		@pour_status.enabled = false
 		@pour_complete = true
 		@last_update = nil
-
-		#if ticks > 0, send back
-		puts "PourController > end_pour > @current_pour: #{@current_pour}"
-		#BW::HTTP.put("#{App::Persistence[:api_url]}/pours", {payload: data}) do |response|
-		#	json = p response.body.to_str
-		#	@pour = BW::JSON.parse json
-		#end
 		@current_pour = nil
 	end
 
@@ -119,8 +124,7 @@ class PourController < UIViewController
 			@beer_tap.symbolize!
 			puts "PourController > get_user > updated @beer_tap: #{@beer_tap}"
 		end
-		# return {"gpio_pin"=>17, "id"=>1, "name"=>"Tap1", "temperature_sensor_id"=>nil, "updated_at"=>"2013-02-10T05:18:18Z", "created_at"=>"2013-02-10T05:18:18Z"}
-	end
+end
 
 	# TODO(Tres): refactor this to it's own module
 	def get_user(user_id = 0)
@@ -131,6 +135,5 @@ class PourController < UIViewController
 			@user.symbolize!
 			puts "PourController > get_user > updated @user: #{@user}"
 		end
-		# return {"name"=>"Tres", "id"=>1, "updated_at"=>"2013-02-10T05:18:49Z", "created_at"=>"2013-02-10T05:18:49Z"}
 	end
 end
