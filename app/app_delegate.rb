@@ -22,10 +22,10 @@ class AppDelegate
     true
   end
 
+  # TODO(Tres): Refactor
   def setup_config
     App::Persistence[:faye_url] = "ws://localhost:9292/faye"
-    #App::Persistence[:faye_channel] = "/testing"
-    App::Persistence[:api_url] = "http://bender.dev" 
+    App::Persistence[:api_url] = "http://bender.dev"
   end
 
 end
