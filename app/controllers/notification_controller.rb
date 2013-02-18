@@ -8,9 +8,21 @@ class NotificationController
 	end
 
 	def listen
+		App.notification_center.addObserver(self, selector:"pour_started:", name:"PourStartNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourUpdateNotification", object:nil)
+		App.notification_center.addObserver(self, selector:"pour_completed:", name:"PourCompleteNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"user_updated:", name:"UserUpdateNotification", object:nil)
   end
+
+	def pour_started(notification)
+		puts ''
+		puts "NotificationController > pour_started"
+	end
+
+	def pour_completed(notification)
+		puts ''
+		puts "NotificationController > pour_completed"
+	end
 
   def pour_updated(notification)
 		puts ''

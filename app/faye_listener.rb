@@ -12,8 +12,9 @@ class FayeListener
     @navigation_controller = navigation_controller
     @connected = false
     @faye = FayeClient.alloc.initWithURLString(App::Persistence[:faye_url], channel: nil)
+    @faye.subscribeToChannel "/pour/start"
     @faye.subscribeToChannel "/pour/update"
-    @faye.subscribeToChannel "/user"
+    @faye.subscribeToChannel "/pour/complete"
     @faye.delegate = self
 
     self
@@ -35,8 +36,12 @@ class FayeListener
     puts "Message received: #{message}"
     puts "Message received on channel: #{channel}"
     case channel
+    when "/pour/start"
+      then App.notification_center.postNotificationName("PourStartNotification", object: nil, userInfo: message)
     when "/pour/update"
       then App.notification_center.postNotificationName("PourUpdateNotification", object: nil, userInfo: message)
+    when "/pour/complete"
+      then App.notification_center.postNotificationName("PourCompleteNotification", object: nil, userInfo: message)
     end
   end
 
