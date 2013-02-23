@@ -17,8 +17,12 @@ module AppHelper
 	end
 end
 
-class NSMutableDictionary
-	def symbolize!
+class NSDictionary
+	def symbolize_keys
+		dup.symbolize_keys!
+	end
+
+	def symbolize_keys!
 		replace(Hash[self.map{|(k,v)| [k.to_sym,v]}])
 	end
 end
