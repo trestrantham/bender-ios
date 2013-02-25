@@ -1,31 +1,36 @@
 class AppDelegate
-	attr_accessor :navigation_controller
-
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    setup_config
-
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
     @beer_tap_controller = BeerTapController.alloc.init
     @navigation_controller = UINavigationController.alloc.initWithRootViewController(@beer_tap_controller)
-
-    # Setup Faye listener
-		@faye = FayeListener.alloc.initWithNavigationController(@navigation_controller)
-		@faye.listen
 
     # Setup NotificationController
     @notification_controller = NotificationController.alloc.initWithNavigationController(@navigation_controller)
     @notification_controller.listen
 
     @window.rootViewController = @navigation_controller
-    @window.makeKeyAndVisible
+    load_settings
+
     true
   end
 
-  # TODO(Tres): Refactor
-  def setup_config
-    App::Persistence[:faye_url] = "ws://localhost:9292/faye"
+  def load_settings
     App::Persistence[:api_url] = "http://bender.dev"
-  end
 
+    BW::HTTP.get("#{App::Persistence[:api_url]}/admin/settings.json") do |response|
+      json = p response.body.to_str
+
+      settings = BW::JSON.parse json
+      settings.symbolize_keys!
+puts "#{settings}"
+      settings.each { |key,val| App::Persistence[key] = val }
+
+      # Setup Faye listener
+      @faye = FayeListener.alloc.initWithNavigationController(@navigation_controller)
+      @faye.listen
+
+      @window.makeKeyAndVisible
+    end
+  end
 end
