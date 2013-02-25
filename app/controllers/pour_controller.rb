@@ -1,18 +1,14 @@
 class PourController < UIViewController
-	POUR_TIMEOUT = 5
-
 	def initWithBeerTap(beer_tap, user: user)
 		puts ''
-		puts "PourController > initWithBeerTap: beer_tap: #{beer_tap}"
-		puts "PourController > initWithBeerTap: user: #{user}"
+		puts "PourController > initWithBeerTap"
 		self.init
 
 		if beer_tap.is_a? Hash
 			@beer_tap = beer_tap
 		elsif beer_tap.is_a? Integer
-			# @beer_tap = get_tap(beer_tap)
-			# get_tap(beer_tap)
 			@beer_tap = {id: beer_tap}
+			get_beer_tap(@beer_tap)
 		else
 			puts "ERROR: Bad beer_tap"
 		end
@@ -26,12 +22,9 @@ class PourController < UIViewController
 			puts "ERROR: Bad user"
 		end
 
-		@beer_tap.symbolize!
-		@user.symbolize!
-
+		@beer_tap.symbolize_keys!
+		@user.symbolize_keys!
 		@last_update = nil
-		@current_pour = nil
-
 		self
 	end
 
@@ -68,72 +61,89 @@ class PourController < UIViewController
 	def start_pour
 		puts ''
 		puts "PourController > start_pour"
+
 		@pour_status.enabled = true
 		@pour_complete = false
 	end
 
-	def update_pour(pour)
+	def update_pour(pour = {})
 		puts ''
 		puts "PourController > update_pour"
-
-		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: nil)
+		
 		start_pour
+		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: nil) # Keep the user alive
+		@pour_volume_field.text = pour[:volume]
+# puts "PourController > update_pour > App::Persistence[:current_user][:id]: #{App::Persistence[:current_user][:id]}"
+# puts "PourController > update_pour > pour[:user_id]: #{pour[:user_id]}"
+		if App::Persistence[:current_user].has_key?(:id) && pour.has_key?(:user_id) && App::Persistence[:current_user][:id] != pour[:user_id]
+			pour_user = {pour: {user_id: App::Persistence[:current_user][:id]}}
+			pour[:user_id] = App::Persistence[:current_user][:id]
+puts "PourController > update_pour > User Changed!"
+			BW::HTTP.put("#{App::Persistence[:api_url]}/pours/#{pour[:id]}.json", {payload: pour_user}) do |response|
+				# TODO(Tres): Handle failure
+				
+puts "PourController > update_pour > PUT finished"
+			end
+		else
+puts "PourController > update_pour > User didn't change. Doing nothing..."
+		end
 
-		@current_pour = pour
-		@current_pour[:user_id] = @user[:id]
-		@last_update = AppHelper.parse_date_string(@current_pour[:updated_at].to_str, "yyyy-MM-dd HH:mm:ss z")
-		@pour_volume_field.text = @current_pour[:volume]
+		@last_update = AppHelper.parse_date_string(pour[:updated_at].to_str, "yyyy-MM-dd'T'HH:mm:ssz")
 
-		EM.add_timer (POUR_TIMEOUT) do
-			if @pour_complete || (@last_update + POUR_TIMEOUT) <= Time.now
-				puts "PourController > update_pour: NOT active"
-				end_pour
+		EM.add_timer App::Persistence[:pour_timeout].to_i do
+			if @pour_complete || (@last_update + App::Persistence[:pour_timeout].to_i) <= Time.now
+puts "PourController > update_pour: NOT active"
+				end_pour(pour)
 			else
-				puts "PourController > update_pour: still active"
+puts "PourController > update_pour: still active"
 			end
 		end
 	end
 
-	def end_pour
+	def end_pour(pour = {})
 		puts ''
-		puts "PourController > end_pour"
-		puts "PourController > end_pour > @current_pour: #{@current_pour}"
-		
-		if true # @current_pour[:ticks].to_i > 0
-			pour = {pour: {user_id: @current_pour[:user_id], change_type: "completed"}}
-			puts "PourController > end_pour > pour: #{pour}"
-			BW::HTTP.put("#{App::Persistence[:api_url]}/pours/#{@current_pour[:id]}.json", {payload: BW::JSON.generate(pour)}) do |response|
-				# TODO(Tres): Handle failure
-				pour = BW::JSON.parse response.body
-				puts "PourController > end_pour > PUT > pour: #{pour}"
-			end
+		puts "PourController > end_pour: #{pour}"
+
+		if pour.has_key?(:user_id) && pour[:user_id].to_i > 0
+			puts "PourController > end_pour > USER PRESENT"
+		else
+			puts "PourController > end_pour > NO USER"
+
+			# Add user choice view
 		end
 
 		@pour_status.enabled = false
 		@pour_complete = true
 		@last_update = nil
-		@current_pour = nil
 	end
 
 	# TODO(Tres): refactor this to it's own module
-	def get_tap(beer_tap_id = 0)
-		puts "PourController > get_user > updating @beer_tap: #{@beer_tap}"
-		BW::HTTP.get("#{App::Persistence[:api_url]}/admin/beer_taps/#{beer_tap_id}.json") do |response|
+	def get_beer_tap(beer_tap = {})
+		puts ''
+		puts "PourController > get_beer_tap"
+# puts "PourController > get_beer_tap > beer_tap_id: #{beer_tap}"
+
+		BW::HTTP.get("#{App::Persistence[:api_url]}/admin/beer_taps/#{beer_tap[:id]}.json") do |response|
+			puts "PourController > get_beer_tap > GOT BEER TAP using #{App::Persistence[:api_url]}/admin/beer_taps/#{beer_tap[:id]}.json"
 			json = p response.body.to_str
 			@beer_tap = BW::JSON.parse json
-			@beer_tap.symbolize!
-			puts "PourController > get_user > updated @beer_tap: #{@beer_tap}"
+			@beer_tap.symbolize_keys!
+# puts "PourController > get_beer_tap > updated @beer_tap: #{@beer_tap}"
 		end
-end
+	end
 
 	# TODO(Tres): refactor this to it's own module
-	def get_user(user_id = 0)
-		puts "PourController > get_user > updating @user: #{@user}"
-		BW::HTTP.get("#{App::Persistence[:api_url]}/users/#{user_id}.json") do |response|
+	def get_user(user = {})
+		puts ''
+		puts "PourController > get_user"
+# puts "PourController > get_user > user_id: #{user}"
+
+		BW::HTTP.get("#{App::Persistence[:api_url]}/users/#{user[:id]}.json") do |response|
+			puts "PourController > get_user > GOT USER using #{App::Persistence[:api_url]}/users/#{user[:id]}.json"
 			json = p response.body.to_str
 			@user = BW::JSON.parse json
-			@user.symbolize!
-			puts "PourController > get_user > updated @user: #{@user}"
+			@user.symbolize_keys!
+# puts "PourController > get_user > updated @user: #{@user}"
 		end
 	end
 end
