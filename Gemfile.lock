@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/clearsightstudio/ProMotion.git
+  revision: 5b32bf8d2a0ac2648e0ba630b50af3f674b98167
+  specs:
+    ProMotion (0.4.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -48,6 +54,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  ProMotion!
   bubble-wrap
   motion-cocoapods
   rake
