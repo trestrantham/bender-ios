@@ -16,3 +16,4 @@ nbproject
 .idea
 /vendor/*/build-iPhoneSimulator/
 .dat*
+/vendor/Pods/Pods.xcodeproj/project.pbxproj
