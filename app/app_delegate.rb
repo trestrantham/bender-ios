@@ -2,35 +2,31 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
-    @beer_tap_controller = BeerTapController.alloc.init
-    @navigation_controller = UINavigationController.alloc.initWithRootViewController(@beer_tap_controller)
+    @navigation_controller = UINavigationController.alloc.initWithRootViewController(BeerTapController.controller)
+    @window.rootViewController = @navigation_controller
+    @window.makeKeyAndVisible
 
     # Setup NotificationController
     @notification_controller = NotificationController.alloc.initWithNavigationController(@navigation_controller)
     @notification_controller.listen
 
-    @window.rootViewController = @navigation_controller
-    load_settings
+    if App::Persistence[:api_url].blank? || !AppHelper.valid_url?(App::Persistence[:api_url])
+      @settings ||= SettingsController.new
+      @settings.parent_controller = BeerTapController.controller
+      @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings)
+      BeerTapController.controller.presentModalViewController(@settings_navigation, animated:false)
+    else
+      AppHelper.reload_settings
+    end
 
     true
   end
 
-  def load_settings
-    App::Persistence[:api_url] = "http://bender.dev"
-
-    BW::HTTP.get("#{App::Persistence[:api_url]}/admin/settings.json") do |response|
-      json = p response.body.to_str
-
-      settings = BW::JSON.parse json
-      settings.symbolize_keys!
-puts "#{settings}"
-      settings.each { |key,val| App::Persistence[key] = val }
-
-      # Setup Faye listener
-      @faye = FayeListener.alloc.initWithNavigationController(@navigation_controller)
-      @faye.listen
-
-      @window.makeKeyAndVisible
-    end
+  def setup_faye
+    puts ""
+    puts "AppDelegate > setup_faye"
+    @faye_listener = nil
+    @faye_listener = FayeListener.alloc.initWithNavigationController(@navigation_controller)
+    @faye_listener.listen
   end
 end

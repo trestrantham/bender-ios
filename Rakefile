@@ -4,6 +4,7 @@ require 'motion/project'
 require 'bubble-wrap/reactor'
 require 'time'
 require 'bundler'
+
 Bundler.require
 
 Motion::Project::App.setup do |app|
