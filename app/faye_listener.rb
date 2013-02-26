@@ -7,7 +7,6 @@ class FayeListener
 
     if App::Persistence[:faye_url].blank?
       App.alert("Faye URL is required!")
-
     elsif !AppHelper.valid_url?(App::Persistence[:faye_url])
       App.alert("Invalid Faye URL.")
     else

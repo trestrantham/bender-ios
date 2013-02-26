@@ -25,31 +25,17 @@ module AppHelper
 		puts ""
 		puts "AppHelper > reload_settings > api_url: #{App::Persistence[:api_url]}"
 
-		if App::Persistence[:api_url].blank?
-			App.alert("API URL is required!")
-			return 
-		end
+		AppHelper.parse_api(:get, "/admin/settings.json") do |response|
+			json = p response.body.to_str
 
-		if !AppHelper.valid_url?(App::Persistence[:api_url])
-			App.alert("Invalid URL.")
-			return
-		end
+			settings = BW::JSON.parse json
+			settings.symbolize_keys!
+			settings.each { |key,val| App::Persistence[key] = val unless key == :api_url }
 
-		BW::HTTP.get("#{App::Persistence[:api_url]}/admin/settings.json") do |response|
-			if response.ok?
-				json = p response.body.to_str
-
-				settings = BW::JSON.parse json
-				settings.symbolize_keys!
-				settings.each { |key,val| App::Persistence[key] = val unless key == :api_url }
-
-				if validate_settings
-					App.delegate.setup_faye
-				else
-					App.alert("There is a problem with the settings from the server.")
-				end
+			if validate_settings
+				App.delegate.setup_faye
 			else
-				App.alert("Server cannot be reached.")
+				App.alert("There is a problem with the settings from the server.")
 			end
 		end
 	end
@@ -59,7 +45,7 @@ module AppHelper
 		return true
 	end
 
-	def parse_api(http_verb = :get, request = "", &block)
+	def parse_api(http_verb = :get, request = "", options = {}, &block)
 		if ![:get, :post, :put, :delete, :head, :patch].include? http_verb
 			puts "!!! AppHelper > parse_api > INVALID http_verb"
 			return
@@ -78,9 +64,9 @@ module AppHelper
 			return
 		end
 
-		BW::HTTP.send(http_verb, "#{App::Persistence[:api_url]}#{request}") do |response|
+		BW::HTTP.send(http_verb, "#{App::Persistence[:api_url]}#{request}", options) do |response|
 			if response.ok?
-				block.call if block
+				block.call(response) if block
 			else
 				App.alert("Server cannot be reached.")
 			end
