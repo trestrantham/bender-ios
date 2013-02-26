@@ -48,6 +48,12 @@ class UserController < UIViewController
 			json = p response.body.to_str
 			@users = BW::JSON.parse json
 
+			# Move Guest user to top
+			guest = @users.select { |user| user[:id].to_i == 0 }
+			@users.delete_if { |user| user[:id].to_i == 0 }
+			@users.sort_by! { |user| user[:name] }
+			@users.insert(0, guest.first) if guest
+
 			@table.reloadData
 			@table.pullToRefreshView.stopAnimating
 		end
