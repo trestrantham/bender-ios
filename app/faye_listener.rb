@@ -20,12 +20,29 @@ class FayeListener
   end
 
   def listen
+    puts ""
+    puts "FayeListener > listen"
+
     if @faye
-      puts "FayeListener: listening on #{App::Persistence[:faye_url]}..."
-      @faye.connectToServer
+      try_connect
     else
       puts "FayeListener: Failed!"
       App.alert("There's a problem with the Faye URL.")
+    end
+  end
+
+  def try_connect
+    puts ""
+    puts "FayeListener > try_connect"
+
+    @faye.connectToServer
+
+    # Retry every 5 seconds until a Faye connection is established
+    EM.add_timer 5 do
+      if !@connected
+        puts "FayeListener > try_connect > retrying Faye connection..."
+        try_connect
+      end
     end
   end
 
@@ -42,13 +59,19 @@ class FayeListener
   end
 
   def connectedToServer
-    puts "Connected"
+    puts ""
+    puts "FayeListener > connectedToServer"
+    puts "FayeListener: listening on #{App::Persistence[:faye_url]}..."
+
+    App.notification_center.postNotificationName("FayeConnectNotification", object: nil, userInfo: nil)
     @connected = true
   end
 
   def disconnectedFromServer
-    puts "Disconnected"
+    puts ""
+    puts "FayeListener > disconnectedToServer"
+
+    App.notification_center.postNotificationName("FayeDisconnectNotification", object: nil, userInfo: nil)
     @connected = false
-    @faye.connectToServer
   end
 end
