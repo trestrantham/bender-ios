@@ -47,7 +47,7 @@ class PourController < UIViewController
 		self.view.addSubview @pour_volume_label
 
 		@pour_status_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-		@pour_status_button.setTitle("Cancel Pour", forState:UIControlStateNormal)
+		@pour_status_button.setTitle("End Pour", forState:UIControlStateNormal)
 		@pour_status_button.setTitle("Pour Complete!", forState:UIControlStateDisabled)
 		@pour_status_button.sizeToFit
 		@pour_status_button.center = CGPointMake(self.view.frame.size.width / 2, @pour_volume_label.center.y + 75)
