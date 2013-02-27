@@ -89,9 +89,9 @@ class PourController < UIViewController
 		@last_update = AppHelper.parse_date_string(pour[:updated_at].to_str, "yyyy-MM-dd'T'HH:mm:ssz")
 
 		EM.add_timer App::Persistence[:pour_timeout].to_i do
-			if @pour_complete || (@last_update + App::Persistence[:pour_timeout].to_i) <= Time.now
+			if (@last_update + App::Persistence[:pour_timeout].to_i) <= Time.now
 				puts "PourController > update_pour: POUR TIMED OUT"
-				end_pour(pour)
+				end_pour(pour) if !@pour_complete
 			end
 		end
 	end
