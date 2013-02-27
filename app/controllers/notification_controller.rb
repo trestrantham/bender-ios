@@ -12,6 +12,7 @@ class NotificationController
 		App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourCompleteNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"user_updated:", name:"UserUpdateNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"setup_faye:", name:"FayeDisconnectNotification", object:nil)
+		App.notification_center.addObserver(self, selector:"setup_faye:", name:"UIApplicationDidBecomeActiveNotification", object:nil)
   end
 
   def pour_updated(notification)
