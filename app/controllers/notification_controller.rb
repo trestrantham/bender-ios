@@ -8,14 +8,14 @@ class NotificationController
 	def listen
 		puts ""
 		puts "NotificationController > listen"
-		App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourStartNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourUpdateNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourCompleteNotification", object:nil)
 		App.notification_center.addObserver(self, selector:"user_updated:", name:"UserUpdateNotification", object:nil)
+		App.notification_center.addObserver(self, selector:"setup_faye:", name:"FayeDisconnectNotification", object:nil)
   end
 
   def pour_updated(notification)
-		puts ''
+		puts ""
 		puts "NotificationController > pour_updated"
 
 		pour = notification.userInfo.nil? ? {} : notification.userInfo.symbolize_keys
@@ -45,7 +45,7 @@ class NotificationController
   end
 
   def user_updated(notification)
-		puts ''
+		puts ""
 		puts "NotificationController > user_updated"
 
 		current_user = App::Persistence[:current_user].nil? ? {} : App::Persistence[:current_user].dup # Duping to get NSMutable
@@ -59,5 +59,12 @@ class NotificationController
 				App::Persistence[:current_user] = nil
 			end
 		end
+  end
+
+  def setup_faye(notification)
+		puts ""
+		puts "NotificationController > setup_faye"
+
+		App.delegate.setup_faye if AppHelper.validate_settings
   end
 end
