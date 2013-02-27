@@ -63,6 +63,7 @@ class UserController < UIViewController
 		@user ||= AddUserController.new
 		@user.parent_controller = self
 		@user_navigation = MainController.alloc.initWithRootViewController(@user)
+		@user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
 		self.presentModalViewController(@user_navigation, animated:true)
 	end
 
