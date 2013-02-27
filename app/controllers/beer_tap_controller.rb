@@ -58,12 +58,14 @@ class BeerTapController < UIViewController
 		beer_tap = @taps[indexPath.row]
 		user_controller ||= UserController.alloc.initWithBeerTap(beer_tap)
 		self.navigationController.pushViewController(user_controller, animated:true)
+
+		@table.deselectRowAtIndexPath(indexPath, animated: true)
 	end
 
 	def show_settings
 		@settings ||= SettingsController.new
 		@settings.parent_controller = self
-		@settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings)
+		@settings_navigation = MainController.alloc.initWithRootViewController(@settings)
 		self.presentModalViewController(@settings_navigation, animated:true)
 	end
 end

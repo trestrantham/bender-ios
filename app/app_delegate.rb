@@ -2,7 +2,7 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
-    @navigation_controller = UINavigationController.alloc.initWithRootViewController(BeerTapController.controller)
+    @navigation_controller = MainController.alloc.initWithRootViewController(BeerTapController.controller)
     @window.rootViewController = @navigation_controller
     @window.makeKeyAndVisible
 

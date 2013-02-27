@@ -62,7 +62,7 @@ class UserController < UIViewController
 	def new_user
 		@user ||= AddUserController.new
 		@user.parent_controller = self
-		@user_navigation = UINavigationController.alloc.initWithRootViewController(@user)
+		@user_navigation = MainController.alloc.initWithRootViewController(@user)
 		self.presentModalViewController(@user_navigation, animated:true)
 	end
 
@@ -91,6 +91,8 @@ class UserController < UIViewController
 
 		pour_controller ||= PourController.alloc.initWithBeerTap(@beer_tap, user: user)
 		self.navigationController.pushViewController(pour_controller, animated: true)
+
+		@table.deselectRowAtIndexPath(indexPath, animated: true)
 	end
 
 	def get_beer_tap(beer_tap = {})
