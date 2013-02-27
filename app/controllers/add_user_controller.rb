@@ -31,11 +31,6 @@ class AddUserController < Formotion::FormController
 		super
 		self.title = "Create User"
 
-		self.navigationItem.rightBarButtonItem ||= UIBarButtonItem.alloc.initWithBarButtonSystemItem(
-																									UIBarButtonSystemItemSave, 
-																									target:self, 
-																									action:"save")
-
 		self.navigationItem.leftBarButtonItem ||= UIBarButtonItem.alloc.initWithBarButtonSystemItem(
 																									UIBarButtonSystemItemCancel, 
 																									target:self, 
