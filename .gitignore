@@ -14,7 +14,10 @@ nbproject
 .eprj
 .sass-cache
 .idea
-/vendor/*/build-iPhoneSimulator/
+vendor/*/build-iPhoneSimulator/
 .dat*
-/vendor/Pods/Pods.xcodeproj/project.pbxproj
+vendor/Pods/Pods.xcodeproj/project.pbxproj
 project.pbxproj
+build-iPhoneOS
+libPods.a
+*.bridgesupport
