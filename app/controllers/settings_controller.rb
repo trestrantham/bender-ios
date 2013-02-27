@@ -5,15 +5,41 @@ class SettingsController < Formotion::FormController
 	def init
 		form = Formotion::Form.new({
 			sections: [{
-				title: "Bender API",
 				rows: [{
-					title: "URL",
+					title: "API URL",
 					key: :api_url,
 					value: App::Persistence[:api_url],
 					placeholder: "http://",
 					type: :string,
 					auto_correction: :no,
 					auto_capitalization: :none
+				}, {
+					title: "Faye URL",
+					key: :faye_url,
+					value: App::Persistence[:faye_url],
+					placeholder: "http://",
+					type: :string,
+					auto_correction: :no,
+					auto_capitalization: :none,
+					editable: false
+				}, {
+					title: "User Timeout",
+					key: :user_timeout,
+					value: App::Persistence[:user_timeout],
+					placeholder: "10",
+					type: :string,
+					auto_correction: :no,
+					auto_capitalization: :none,
+					editable: false
+				}, {
+					title: "Pour Timeout",
+					key: :pour_timeout,
+					value: App::Persistence[:pour_timeout],
+					placeholder: "5",
+					type: :string,
+					auto_correction: :no,
+					auto_capitalization: :none,
+					editable: false
 				}]
 			}, {
 				rows: [{
