@@ -10,7 +10,7 @@ Bundler.require
 Motion::Project::App.setup do |app|
 	# Use `rake config' to see complete project settings.
 	app.name = 'bender-ios'
-	app.device_family = :ipad #[:ipad,:iphone]
+	#app.device_family = :ipad #[:ipad,:iphone]
 
 	app.pods do
 		pod 'SVPullToRefresh'
