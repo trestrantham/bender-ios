@@ -1,4 +1,6 @@
 class FayeListener
+  attr_accessor :connected
+
   def initWithNavigationController(navigation_controller)
     self.init
 

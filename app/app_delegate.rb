@@ -1,4 +1,6 @@
 class AppDelegate
+  attr_accessor :faye_listener
+
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -9,6 +11,8 @@ class AppDelegate
     # Setup NotificationController
     @notification_controller = NotificationController.alloc.initWithNavigationController(@navigation_controller)
     @notification_controller.listen
+
+    @faye_listener = nil
 
     if App::Persistence[:api_url].blank? || !AppHelper.valid_url?(App::Persistence[:api_url])
       @settings ||= SettingsController.new
@@ -25,8 +29,14 @@ class AppDelegate
   def setup_faye
     puts ""
     puts "AppDelegate > setup_faye"
-    @faye_listener = nil
-    @faye_listener = FayeListener.alloc.initWithNavigationController(@navigation_controller)
-    @faye_listener.listen
+
+    if @faye_listener.nil? || !@faye_listener.connected
+      puts "AppDelegate > setup_faye > restarting"
+      @faye_listener = nil
+      @faye_listener = FayeListener.alloc.initWithNavigationController(@navigation_controller)
+      @faye_listener.listen
+    else
+      puts "AppDelegate > setup_faye > still active"
+    end
   end
 end
