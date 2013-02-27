@@ -66,7 +66,7 @@ class BeerTapController < UIViewController
 		@settings ||= SettingsController.new
 		@settings.parent_controller = self
 		@settings_navigation = MainController.alloc.initWithRootViewController(@settings)
-		@user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
+		@settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
 		self.presentModalViewController(@settings_navigation, animated:true)
 	end
 end
