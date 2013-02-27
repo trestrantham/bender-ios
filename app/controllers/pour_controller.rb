@@ -33,34 +33,32 @@ class PourController < UIViewController
 
 		setup_view
 
-		@pour_status.when(UIControlEventTouchUpInside) { end_pour }
+		@pour_status_button.when(UIControlEventTouchUpInside) { end_pour }
 
 		start_pour
 	end
 
 	def setup_view
-		@pour_volume_field = UITextField.alloc.initWithFrame [[0,0], [160, 26]]
-		@pour_volume_field.placeholder = "#abcabc"
-		@pour_volume_field.textAlignment = UITextAlignmentCenter
-		@pour_volume_field.autocapitalizationType = UITextAutocapitalizationTypeNone
-		@pour_volume_field.borderStyle = UITextBorderStyleRoundedRect
-		@pour_volume_field.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2 - 100)
-		self.view.addSubview @pour_volume_field
-		@pour_volume_field.enabled = false
+		@pour_volume_label = UILabel.alloc.initWithFrame [[0,0], [320, 200]]
+		@pour_volume_label.font = UIFont.boldSystemFontOfSize(72)
+		@pour_volume_label.text = "0.0 oz"
+		@pour_volume_label.textAlignment = UITextAlignmentCenter
+		@pour_volume_label.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2 - 100)
+		self.view.addSubview @pour_volume_label
 
-		@pour_status = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-		@pour_status.setTitle("Cancel Pour", forState:UIControlStateNormal)
-		@pour_status.setTitle("Pour Complete!", forState:UIControlStateDisabled)
-		@pour_status.sizeToFit
-		@pour_status.center = CGPointMake(self.view.frame.size.width / 2, @pour_volume_field.center.y + 40)
-		self.view.addSubview @pour_status
+		@pour_status_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+		@pour_status_button.setTitle("Cancel Pour", forState:UIControlStateNormal)
+		@pour_status_button.setTitle("Pour Complete!", forState:UIControlStateDisabled)
+		@pour_status_button.sizeToFit
+		@pour_status_button.center = CGPointMake(self.view.frame.size.width / 2, @pour_volume_label.center.y + 75)
+		self.view.addSubview @pour_status_button
 	end
 
 	def start_pour
 		puts ''
 		puts "PourController > start_pour"
 
-		@pour_status.enabled = true
+		@pour_status_button.enabled = true
 		@pour_complete = false
 	end
 
@@ -69,7 +67,7 @@ class PourController < UIViewController
 		puts "PourController > update_pour"
 		
 		start_pour
-		@pour_volume_field.text = pour[:volume]
+		@pour_volume_label.text = "#{(pour[:volume].to_f * 10.0).round / 10.0} oz"
 		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: nil) # Keep the user alive
 
 		if App::Persistence[:current_user].has_key?(:id) && pour.has_key?(:user_id)
@@ -104,9 +102,11 @@ class PourController < UIViewController
 			# TODO(Tres): Add user choice view
 		end
 
-		@pour_status.enabled = false
+		@pour_status_button.enabled = false
 		@pour_complete = true
 		@last_update = nil
+
+		self.navigationController.popToRootViewControllerAnimated(true) if self.navigationController
 	end
 
 	def get_beer_tap(beer_tap = {})
