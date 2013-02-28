@@ -22,7 +22,9 @@ class PourController < UIViewController
 
 		@beer_tap.symbolize_keys!
 		@user.symbolize_keys!
-		@last_update = nil
+		@updated_at = nil
+		@finished_at = nil
+
 		self
 	end
 
@@ -47,7 +49,7 @@ class PourController < UIViewController
 		self.view.addSubview @pour_volume_label
 
 		@pour_status_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-		@pour_status_button.setTitle("End Pour", forState:UIControlStateNormal)
+		@pour_status_button.setTitle("Done", forState:UIControlStateNormal)
 		@pour_status_button.setTitle("Pour Complete!", forState:UIControlStateDisabled)
 		@pour_status_button.sizeToFit
 		@pour_status_button.center = CGPointMake(self.view.frame.size.width / 2, @pour_volume_label.center.y + 75)
@@ -64,11 +66,11 @@ class PourController < UIViewController
 
 	def update_pour(pour = {})
 		puts ''
-		puts "PourController > update_pour"
+		puts "PourController > update_pour: #{pour}"
 		
 		start_pour
-		@pour_volume_label.text = "#{(pour[:volume].to_f * 10.0).round / 10.0} oz"
 		App.notification_center.postNotificationName("UserUpdateNotification", object: nil, userInfo: nil) # Keep the user alive
+		@pour_volume_label.text = "#{pour[:volume].to_f.round(1)} oz"
 
 		if App::Persistence[:current_user].has_key?(:id) && pour.has_key?(:user_id)
 			if App::Persistence[:current_user][:id].to_s != pour[:user_id].to_s
@@ -86,17 +88,23 @@ class PourController < UIViewController
 			puts "!!! PourController > update_pour > user_id is missing!"
 		end
 
-		@last_update = AppHelper.parse_date_string(pour[:updated_at].to_str, "yyyy-MM-dd'T'HH:mm:ssz")
+		@updated_at = AppHelper.parse_date_string(pour[:updated_at].to_s, "yyyy-MM-dd'T'HH:mm:ssz") if pour[:updated_at]
+		@finished_at = AppHelper.parse_date_string(pour[:finished_at].to_s, "yyyy-MM-dd'T'HH:mm:ssz") if pour[:finished_at]
 
 		EM.add_timer App::Persistence[:pour_timeout].to_i do
-			if (@last_update + App::Persistence[:pour_timeout].to_i) <= Time.now
+			if @finished_at || ( @updated_at && (@updated_at + App::Persistence[:pour_timeout].to_i) <= Time.now )
 				puts "PourController > update_pour: POUR TIMED OUT"
 				end_pour(pour) if !@pour_complete
+			else
+				puts "PourController > update_pour: POUR ACTIVE"
 			end
 		end
 	end
 
 	def end_pour(pour = {})
+		puts ''
+		puts "PourController > end_pour"
+
 		if !pour.has_key?(:user_id) || pour[:user_id].to_i == 0
 			puts "PourController > end_pour > NO USER"
 			# TODO(Tres): Add user choice view
@@ -104,7 +112,8 @@ class PourController < UIViewController
 
 		@pour_status_button.enabled = false
 		@pour_complete = true
-		@last_update = nil
+		@updated_at = nil
+		@finished_at = nil
 
 		self.navigationController.popToRootViewControllerAnimated(true) if self.navigationController
 	end
