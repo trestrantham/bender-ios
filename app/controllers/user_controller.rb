@@ -13,6 +13,7 @@ class UserController < UIViewController
 
 		@beer_tap.symbolize_keys!
 		@pour_active = false
+
 		self
 	end
 
@@ -24,6 +25,7 @@ class UserController < UIViewController
 		@table ||= UITableView.alloc.initWithFrame(self.view.bounds)
 		@table.dataSource = self
 		@table.delegate = self
+		@table.setAutoresizingMask(UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight)
 		@table.addPullToRefreshWithActionHandler( Proc.new { load_data } )
 		self.view.addSubview @table
 
