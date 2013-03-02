@@ -18,7 +18,6 @@ Motion::Project::App.setup do |app|
 
 	app.vendor_project 'vendor/JSONKit', :static
 	app.vendor_project 'vendor/FayeObjc', :static, cflags: '-fobjc-arc'
-	app.vendor_project 'vendor/MGSplitViewController', :static
 
 
 	app.codesign_certificate = 'iPhone Developer: William Trantham III (3E8KX84744)'
