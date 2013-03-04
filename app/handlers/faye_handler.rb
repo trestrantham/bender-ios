@@ -8,8 +8,6 @@ class FayeHandler
     puts ""
     puts "FayeHandler > setup"
 
-    self.init
-
     @connected = false
     @faye = nil
     @retry_count = 0
@@ -23,6 +21,10 @@ class FayeHandler
       @faye.subscribeToChannel "/pour/update"
       @faye.subscribeToChannel "/pour/complete"
       @faye.delegate = self
+    end
+
+    @settings_observer = App.notification_center.observe "SettingsChangedNotification" do |notification|
+      reconnect
     end
 
     self
