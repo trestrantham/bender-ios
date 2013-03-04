@@ -48,7 +48,7 @@ class AddUserController < Formotion::FormController
 		@form_data = self.form.render
 		puts "AddNewUserController > save > @form_data: #{@form_data}"
 
-		user = {user: {name: @form_data[:name]}} if @form_data.has_key?(:name)
+		user = { user: { name: @form_data[:name] } } if @form_data.has_key?(:name)
 
 		# Set spinner
 		# AppHelper.parse_api(:post, "/users.json", {payload: user}) do |response|

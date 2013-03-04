@@ -30,7 +30,7 @@
 #import <UIKit/UIKit.h>
 #endif
 
-//#import "JSONKit.h"
+#import "JSONKit.h"
 #import "SRWebSocket.h"
 
 enum _fayeStates {

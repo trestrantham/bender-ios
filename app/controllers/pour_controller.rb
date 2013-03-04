@@ -5,7 +5,7 @@ class PourController < UIViewController
     if beer_tap.is_a?(Hash)
       @beer_tap = beer_tap
     elsif beer_tap.is_a?(Integer) || beer_tap.is_a?(Fixnum)
-      @beer_tap = {id: beer_tap}
+      @beer_tap = { id: beer_tap }
       get_beer_tap(@beer_tap)
     else
       puts "ERROR: Bad beer_tap"
@@ -14,7 +14,7 @@ class PourController < UIViewController
     if user.is_a?(Hash)
       @user = user
     elsif user.is_a?(Integer) || user.is_a?(Fixnum)
-      @user = {id: user}
+      @user = { id: user }
       get_user(@user)
     else
       puts "ERROR: Bad user"
@@ -48,7 +48,7 @@ class PourController < UIViewController
 
     @beer_name = UILabel.alloc.initWithFrame(CGRectMake(20, 240, 344, 40))
     @beer_name.font = UIFont.boldSystemFontOfSize(24)
-    @beer_name.text = @beer_tap && @beer_tap.has_key?(:name) ? @beer_tap[:name] : "No Beer"
+    @beer_name.text = @beer_tap && @beer_tap.fetch(:name, "No Beer")
     @beer_name.textAlignment = UITextAlignmentLeft
     @beer_name.backgroundColor = UIColor.lightGrayColor
     self.view.addSubview @beer_name
@@ -104,7 +104,7 @@ class PourController < UIViewController
   end
 
   def end_pour(pour = {})
-    if !pour.has_key?(:user_id) || pour[:user_id].to_i == 0
+    if pour.fetch(:user_id, 0) == 0
       puts "PourController > end_pour > NO USER"
       # TODO(Tres): Add user choice view
     end

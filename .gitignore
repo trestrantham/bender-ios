@@ -21,3 +21,6 @@ project.pbxproj
 build-iPhoneOS
 libPods.a
 *.bridgesupport
+*.bridgesupport
+
+*.a

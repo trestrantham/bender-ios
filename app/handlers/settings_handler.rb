@@ -1,5 +1,5 @@
 class SettingsHandler
-  def reload_settings(&block)
+  def reload_settings
     puts ""
     puts "SettingsHandler > reload_settings > api_url: #{App::Persistence[:api_url]}"
 
@@ -13,8 +13,7 @@ class SettingsHandler
       settings.each { |key,val| App::Persistence[key] = val unless key == :api_url }
 
       if validate_settings
-        #App.delegate.setup_faye
-        block.call if block
+        App.notification_center.post "SettingsChangedNotification"
       else
         App.alert("There is a problem with the settings from the server.")
       end

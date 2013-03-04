@@ -70,7 +70,7 @@ class SettingsController < Formotion::FormController
     puts ""
     puts "SettingsController > save > @form_data: #{@form_data}"
 
-    if !@form_data.has_key?(:api_url) || @form_data[:api_url].blank?
+    if @form_data.fetch(:api_url, "") == ""
       App.alert("API URL is required!")
       return 
     end

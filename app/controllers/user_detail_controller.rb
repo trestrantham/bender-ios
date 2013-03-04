@@ -16,7 +16,7 @@ class UserDetailController < UIViewController
     if user.is_a? Hash
       @user = user
     elsif user.is_a? Integer
-      @user = {id: user}
+      @user = { id: user }
       get_user(@user)
     else
       puts "ERROR: Bad user"
@@ -31,7 +31,7 @@ class UserDetailController < UIViewController
   def viewDidLoad
     puts "UserDetailController > viewDidLoad > @user: #{@user}"
     super
-    self.title = @user && @user.has_key?(:name) ? @user[:name] : "No User"
+    self.title = @user && @user.fetch(:name, "No User")
     setup_view
   end
 
@@ -69,7 +69,7 @@ class UserDetailController < UIViewController
 
     @user_name = UILabel.alloc.initWithFrame(CGRectMake(20, 240, 344, 40))
     @user_name.font = UIFont.boldSystemFontOfSize(24)
-    @user_name.text = @user && @user.has_key?(:name) ? @user[:name] : "No User"
+    @user_name.text = @user && @user.fetch(:name, "No User")
     @user_name.textAlignment = UITextAlignmentLeft
     @user_name.backgroundColor = UIColor.lightGrayColor
     self.view.addSubview @user_name
@@ -102,9 +102,9 @@ class UserDetailController < UIViewController
   end
 
   def update_view
-    if @user
-      self.title = @user[:name] if @user && @user.has_key?(:name)
-      @user_name.text = @user[:name] if @user && @user.has_key?(:name)
+    if @user && @user.has_key?(:name)
+      self.title = @user[:name]
+      @user_name.text = @user[:name]
     end
   end 
 
