@@ -34,7 +34,21 @@ class BeerListController < UITableViewController
     section = 0 # change if we use sectioned list of beers
     @index_path = NSIndexPath.indexPathForRow(@beers_index_hash[pour[:beer_tap_id].to_i].to_i, inSection: section)
 
-    tableView.selectRowAtIndexPath(@index_path, animated: false, scrollPosition: UITableViewScrollPositionNone)
+    tableView.selectRowAtIndexPath(@index_path,
+                         animated: false,
+                   scrollPosition: UITableViewScrollPositionNone)
+
+    tableView.scrollToRowAtIndexPath(@index_path, 
+                   atScrollPosition: UITableViewScrollPositionNone,
+                           animated: true)
+  end
+
+  def reset_beer
+    puts ""
+    puts "BeerListController > reset_beer"
+
+    tableView.deselectRowAtIndexPath(tableView.indexPathForSelectedRow, animated: true)
+    @index_path = nil
   end
 
   def numberOfSectionsInTableView(tableView)

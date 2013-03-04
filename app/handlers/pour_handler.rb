@@ -1,72 +1,61 @@
 class PourHandler
-  def initWithMainController(main_controller)
-    self.init
-    @main_controller = main_controller
-    self
+  def setup
+    @current_pours = {}
+    @current_users = {}
   end
 
-  def listen
+  def pour_update(pour, current_user_id)
     puts ""
-    puts "PourEventHandler > listen"
-    App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourUpdateNotification", object:nil)
-    App.notification_center.addObserver(self, selector:"pour_updated:", name:"PourCompleteNotification", object:nil)
-    App.notification_center.addObserver(self, selector:"user_updated:", name:"UserUpdateNotification", object:nil)
-    App.notification_center.addObserver(self, selector:"user_updated:", name:"UserUpdateNotification", object:nil)
-  end
+    puts "PourHandler > pour_update > pour: #{pour}"
 
-  def pour_updated(notification)
-    puts ""
-    puts "PourEventHandler > pour_updated"
+    # We can't do anything without a pour id
+    return unless pour.has_key?(:id)
 
-    pour = notification.userInfo.nil? ? {} : notification.userInfo.symbolize_keys
-    pour_controller = nil
-    
-    user_id = if pour.has_key?(:user_id) && pour[:user_id].to_i > 0
-                pour[:user_id].to_i
-              elsif !App::Persistence[:current_user].blank? && App::Persistence[:current_user].has_key?(:id)
-                App::Persistence[:current_user][:id].to_i
-              else
-                0
-              end
+    # Send an update for this pour if the current user doesn't match the pour's user_id
+    update_pour_user(pour[:id], current_user_id) if pour.fetch(:user_id, 0).to_i != current_user_id
 
-    #if @main_controller.visibleViewController.class.to_s != "PourController"
-    # pour_controller = PourController.alloc.initWithBeerTap(pour[:beer_tap_id].to_i, user: user_id)
-    # @main_controller.popToRootViewControllerAnimated false
-    # @main_controller.pushViewController(pour_controller, animated: true)
-    #else
-    # pour_controller = @main_controller.visibleViewController
-    #end
+    @current_pours[pour[:id]] = Time.now
 
-    if pour_controller.nil?
-      puts "!!! ERROR: No pour_controller in PourEventHandler > pour_updated"
-    else
-      pour_controller.update_pour(pour)
+    EM.add_timer App::Persistence[:pour_timeout].to_i do
+      if @current_pours[pour[:id]] + App::Persistence[:pour_timeout].to_i <= Time.now
+        puts "PourHandler > pour_update > POUR TIMED OUT"
+        App.notification_center.post "PourTimeoutNotification"
+
+        @current_pours.delete(pour[:id])
+      end
     end
   end
 
   # Set the current user as active for the user_timeout period.
   # Calling this repeatedly (as done during a pour event) will keep the user 'alive'.
-  def user_updated(notification)
+  def user_update(user)
     puts ""
-    puts "PourEventHandler > user_updated"
+    puts "PourHandler > user_update"
 
-    current_user = App::Persistence[:current_user].nil? ? {} : App::Persistence[:current_user].dup # Duping to get NSMutable
-    current_user = notification.userInfo.symbolize_keys unless notification.userInfo.nil?
-    current_user[:now] = "#{Time.now}"
-    App::Persistence[:current_user] = current_user
+    # We can't do anything without a user id
+    return unless user.has_key?(:id)
 
-    # Wait for the user_timeout and see if the user is still active
+    @current_users[user[:id]] = Time.now
+
     EM.add_timer App::Persistence[:user_timeout].to_i do
-puts "App::Persistence[:current_user][:now].to_s: #{App::Persistence[:current_user][:now].to_s}"
-      
-      now_time
+      if @current_users[user[:id]] + App::Persistence[:user_timeout].to_i <= Time.now
+        puts "PourHandler > user_update > USER TIMED OUT #{user}"
+        App.notification_center.post("UserTimeoutNotification", nil, user)
 
-
-      user_now = AppHelper.parse_date_string(App::Persistence[:current_user][:now].to_s, "yyyy-MM-dd HH:mm:ss z") 
-      if !App::Persistence[:current_user].blank? && (user_now + App::Persistence[:user_timeout].to_i) <= Time.now
-        puts "PourEventHandler > user_updated > USER TIMED OUT"
-        App::Persistence[:current_user] = nil
+        @current_users.delete(user[:id])
       end
+    end
+  end
+
+  def update_pour_user(pour_id, user_id)
+    puts ""
+    puts "PourHandler > update_pour_user"
+
+    pour_user = { pour: { user_id: user_id } }
+
+    AppHelper.parse_api(:put, "/pours/#{pour_id}.json", { payload: pour_user }) do |response|
+      puts "PourHandler > update_pour_user > PUT finished: /pours/#{pour_id}.json user_id: #{user_id}"
+      App.notification_center.post "PourUserUpdatedNotification"
     end
   end
 end

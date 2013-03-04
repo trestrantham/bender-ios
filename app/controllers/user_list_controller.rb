@@ -5,13 +5,15 @@ class UserListController < UITableViewController
     self.title = "Users"
     @users = []
     @users_index_hash = {}
-    @index_path = nil
-    
+
     tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
     load_data
   end
 
   def load_data
+    puts ""
+    puts "UserListController > load_data"
+
     return if App::Persistence[:api_url].blank?
 
     AppHelper.parse_api(:get, "/users.json") do |response|
@@ -33,30 +35,32 @@ class UserListController < UITableViewController
     end
   end
 
-  def update_user(pour)
+  def update_user(user_id)
     puts ""
-    puts "UserListController > update_user"
-    puts "#{pour}"
+    puts "UserListController > update_user: #{user_id}"
 
-    user_id = pour.has_key?(:user_id) ? pour[:user_id].to_i : 0
-    current_index = tableView.indexPathForSelectedRow.nil? ? -1 : tableView.indexPathForSelectedRow.row # Ignores section
-puts "user_id: #{user_id}"
-puts "current_index: #{current_index}"
-puts "@users_index_hash: #{@users_index_hash}"
-    # Check if the incoming pour has a user and if it's different than our currently selected user
-    if @users_index_hash[user_id] != current_index #&& user_id > 0
-      section = 0 # change if we need to use a sectioned list of beers
-      @index_path = NSIndexPath.indexPathForRow(@users_index_hash[user_id], inSection: section)
+    @index_path = NSIndexPath.indexPathForRow(@users_index_hash[user_id], inSection: 0)
 
-      tableView.selectRowAtIndexPath(@index_path,
-                           animated: false,
-                     scrollPosition: UITableViewScrollPositionNone)
+    tableView.selectRowAtIndexPath(@index_path,
+                         animated: false,
+                   scrollPosition: UITableViewScrollPositionNone)
 
-      tableView.scrollToRowAtIndexPath(@index_path, 
-                     atScrollPosition: UITableViewScrollPositionNone,
-                             animated: true)
+    tableView.scrollToRowAtIndexPath(@index_path, 
+                   atScrollPosition: UITableViewScrollPositionNone,
+                           animated: true)
 
-      App.notification_center.post("UserUpdateNotification", nil, @users[@users_index_hash[user_id]])
+    App.notification_center.post("UserUpdatedNotification", nil, @users[@users_index_hash[user_id]])
+  end
+
+  def reset_user(user_id)
+    puts ""
+    puts "UserListController > reset_user: #{user_id}"
+
+    index = @users_index_hash.fetch(user_id.to_i, 0)
+
+    if index == tableView.indexPathForSelectedRow.row
+      tableView.deselectRowAtIndexPath(tableView.indexPathForSelectedRow, animated: true)
+      @index_path = nil
     end
   end
 
@@ -88,7 +92,7 @@ puts "@users_index_hash: #{@users_index_hash}"
     end
     
     user = @users[index_path.row]
-    App.notification_center.post("UserUpdateNotification", nil, user)
+    App.notification_center.post("UserUpdatedNotification", nil, user)
 #
 #   user_detail_controller ||= UserDetailController.alloc.initWithFrame(self.view.bounds, user: user)
 #   self.navigationController.pushViewController(user_detail_controller, animated: true)
