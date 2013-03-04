@@ -24,3 +24,15 @@ libPods.a
 *.bridgesupport
 
 *.a
+
+vendor/Pods/Pods.bridgesupport
+
+vendor/Pods/build-iPhoneSimulator/libPods.a
+
+vendor/Pods/Pods.bridgesupport
+
+vendor/Pods/build-iPhoneSimulator/libPods.a
+
+vendor/Pods/Pods.bridgesupport
+
+vendor/Pods/build-iPhoneSimulator/libPods.a
