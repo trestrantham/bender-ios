@@ -2,11 +2,20 @@ class UserListController < UITableViewController
   def viewDidLoad
     super
 
-    self.title = "Users"
+    self.title = "Drinkers"
     @users = []
     @users_index_hash = {}
 
+    tableView.rowHeight = 115
+    tableView.backgroundColor = "#333".uicolor
+    tableView.separatorColor = :clear.uicolor
+
+    tableView.layer.masksToBounds = true
+    tableView.layer.borderColor = :black.uicolor.CGColor
+    tableView.layer.borderWidth = 1
+
     tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
+
     load_data
   end
 
@@ -17,8 +26,8 @@ class UserListController < UITableViewController
     return if App::Persistence[:api_url].blank?
 
     AppHelper.parse_api(:get, "/users.json") do |response|
-      json = p response.body.to_str
-      @users = BW::JSON.parse json
+      # TODO(Tres): Add error checking
+      @users = BW::JSON.parse response.body 
 
       # Move Guest user to top
       guest = @users.select { |user| user[:id].to_i == 0 }
@@ -45,9 +54,9 @@ class UserListController < UITableViewController
                          animated: false,
                    scrollPosition: UITableViewScrollPositionNone)
 
-    tableView.scrollToRowAtIndexPath(@index_path, 
-                   atScrollPosition: UITableViewScrollPositionNone,
-                           animated: true)
+    # tableView.scrollToRowAtIndexPath(@index_path, 
+    #                atScrollPosition: UITableViewScrollPositionNone,
+    #                        animated: true)
 
     App.notification_center.post("UserUpdatedNotification", nil, @users[@users_index_hash[user_id]])
   end
@@ -57,8 +66,9 @@ class UserListController < UITableViewController
     puts "UserListController > reset_user: #{user_id}"
 
     index = @users_index_hash.fetch(user_id.to_i, 0)
+    row = tableView.indexPathForSelectedRow.nil? ? nil : tableView.indexPathForSelectedRow.row
 
-    if index == tableView.indexPathForSelectedRow.row
+    if index == row
       tableView.deselectRowAtIndexPath(tableView.indexPathForSelectedRow, animated: true)
       @index_path = nil
     end
@@ -73,13 +83,14 @@ class UserListController < UITableViewController
   end
 
   def tableView(tableView, cellForRowAtIndexPath: index_path)
-    @reuse_identifier ||= "CELL_IDENTIFIER"
+    @reuse_identifier ||= "user_cell_identifier"
 
     cell = tableView.dequeueReusableCellWithIdentifier(@reuse_identifier) || begin
-      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
+      UserCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
-    cell.textLabel.text = @users[index_path.row][:name]
+    cell.user_name.text = @users[index_path.row][:name]
+
     cell
   end
 
@@ -89,14 +100,8 @@ class UserListController < UITableViewController
       @index_path = nil
     else
       @index_path = index_path
+      user = @users[index_path.row]
+      App.notification_center.post("UserUpdatedNotification", nil, user)
     end
-    
-    user = @users[index_path.row]
-    App.notification_center.post("UserUpdatedNotification", nil, user)
-#
-#   user_detail_controller ||= UserDetailController.alloc.initWithFrame(self.view.bounds, user: user)
-#   self.navigationController.pushViewController(user_detail_controller, animated: true)
-#
-#   tableView.deselectRowAtIndexPath(index_path, animated: true)
   end
 end

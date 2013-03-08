@@ -6,20 +6,29 @@ class BeerListController < UITableViewController
     @beers = []
     @beers_index_hash = {}
     @index_path = nil
-    
-    tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
-    load_data
 
-    # Manually highlight a cell
-    # [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    tableView.rowHeight = 250
+    tableView.backgroundColor = "#333".uicolor
+    tableView.separatorColor = :clear.uicolor
+
+    tableView.layer.masksToBounds = true
+    tableView.layer.borderColor = :black.uicolor.CGColor
+    tableView.layer.borderWidth = 1
+
+    tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
+
+    load_data
   end
 
   def load_data
+    puts ""
+    puts "BeerListController > load_data"
+
     return if App::Persistence[:api_url].blank?
 
     AppHelper.parse_api(:get, "/kegs.json") do |response|
-      json = p response.body.to_str
-      @beers = BW::JSON.parse json
+      # TODO(Tres): Add error checking
+      @beers = BW::JSON.parse response.body
 
       # Map the beer_tap_id to the index path
       @beers_index_hash = {}
@@ -32,6 +41,7 @@ class BeerListController < UITableViewController
 
   def select_beer(pour)
     section = 0 # change if we use sectioned list of beers
+
     @index_path = NSIndexPath.indexPathForRow(@beers_index_hash[pour[:beer_tap_id].to_i].to_i, inSection: section)
 
     tableView.selectRowAtIndexPath(@index_path,
@@ -60,27 +70,27 @@ class BeerListController < UITableViewController
   end
 
   def tableView(tableView, cellForRowAtIndexPath: index_path)
-    @reuse_identifier ||= "CELL_IDENTIFIER"
+    @reuse_identifier ||= "beer_cell_identifier"
 
     cell = tableView.dequeueReusableCellWithIdentifier(@reuse_identifier) || begin
-      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
+      BeerCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
-    cell.textLabel.text = @beers[index_path.row][:name]
+    cell.beer_name.text = @beers[index_path.row][:name]
+    cell.beer_brewery.text = "Really Long Brewery Goes Here" 
+    cell.beer_style.text = "Style" 
+    cell.keg_volume_remaining.text = "37.4 oz Remaining"
+    cell.keg_volume_consumed.text = "21.9 oz Consumed"
+
     cell
   end
 
   def tableView(tableView, didSelectRowAtIndexPath:index_path)
-    puts "select"
     if @index_path == tableView.indexPathForSelectedRow
       tableView.deselectRowAtIndexPath(index_path, animated: true) 
       @index_path = nil
     else
       @index_path = index_path
     end
-    #beer_tap = @beers[indexPath.row]
-    #pour_controller ||= PourController.alloc.initWithBeerTap(beer_tap, user: 0)
-    #self.navigationController.pushViewController(pour_controller, animated: true)
-    #tableView.deselectRowAtIndexPath(index_path, animated: true)
   end
 end
