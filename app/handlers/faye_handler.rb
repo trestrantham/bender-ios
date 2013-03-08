@@ -34,6 +34,8 @@ class FayeHandler
     puts ""
     puts "FayeHandler > connect"
 
+    setup unless @faye
+
     if @faye
       try_connect
     else
@@ -95,6 +97,7 @@ class FayeHandler
     puts "FayeHandler: listening on #{App::Persistence[:faye_url]}..."
 
     App.notification_center.post "FayeConnectNotification"
+
     @connected = true
     @retry_count = 0
   end
