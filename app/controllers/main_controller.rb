@@ -1,4 +1,11 @@
 class MainController < UIViewController
+  BEER_LIST_WIDTH = 428
+  USER_LIST_WIDTH = 340
+  LIST_HEIGHT = 753
+  PADDING = 20
+
+  attr_accessor :faye_handler # TODO(Tres): change to class method
+
   def viewDidLoad
     puts ""
     puts "MainController > viewDidLoad"
@@ -8,22 +15,17 @@ class MainController < UIViewController
     @current_pour = nil
     @current_user_id = nil
 
-# !!! If current pour (not active but not yet timed out) and user is clicked,
-# !!! send PUT to update user
-# !!! Follow same @current_user_id logic to maintain state
-# !!! If current pour and current user, send PUT no matter when user is clicked
-
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
-    self.view.backgroundColor = UIColor.blueColor
+    self.view.backgroundColor = "#444".uicolor
 
-    # Setup container views 
-    @beers_view = UIView.alloc.initWithFrame(CGRectMake(0, 0, 480, 753))
-    @users_view = UIView.alloc.initWithFrame(CGRectMake(480, 0, 288, 753))
-    @context_view = UIView.alloc.initWithFrame(CGRectMake(0, 753, 768, 251))
+    # Setup views
+    @beers_view = setup_beers_view
+    @users_view = setup_users_view
+    @context_view = setup_context_view
 
-    self.view.addSubview(@beers_view)
-    self.view.addSubview(@users_view)
-    self.view.addSubview(@context_view)
+    self.view << @beers_view
+    self.view << @users_view
+    self.view << @context_view
 
     setup_child_controllers
     setup_handlers
@@ -44,46 +46,108 @@ class MainController < UIViewController
     @context_view = nil
   end
 
-  def shouldAutorotate
-    true
-  end
-
-  def supportedInterfaceOrientations
-    UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown
-  end
-
 # Setup
+  
+  def setup_beers_view
+    beers_view = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH, LIST_HEIGHT]])
+    highlight_top = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH - 1, 1]])
+    highlight_top.backgroundColor = "#666".uicolor
+    shadow_bottom = UIView.alloc.initWithFrame([[0, LIST_HEIGHT - 1], [BEER_LIST_WIDTH - 1, 1]])
+    shadow_bottom.backgroundColor = :black.uicolor
+    y_line = UIView.alloc.initWithFrame([[BEER_LIST_WIDTH - 1, 0], [1, LIST_HEIGHT]])
+    y_line.backgroundColor = :black.uicolor
+    highlight_bottom = UIView.alloc.initWithFrame([[PADDING, 
+                                                    LIST_HEIGHT - PADDING], 
+                                                   [BEER_LIST_WIDTH - PADDING * 2, 
+                                                    1]])
+    highlight_bottom.backgroundColor = "#666".uicolor
+    beers_view << highlight_top
+    beers_view << shadow_bottom
+    beers_view << y_line
+    beers_view << highlight_bottom
+    
+    beers_view
+  end
+
+  def setup_users_view
+    users_view = UIView.alloc.initWithFrame([[BEER_LIST_WIDTH, 0], [USER_LIST_WIDTH, LIST_HEIGHT]])
+    highlight_top = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH, 1]])
+    highlight_top.backgroundColor = "#666".uicolor
+    shadow_bottom = UIView.alloc.initWithFrame([[0, LIST_HEIGHT - 1], [USER_LIST_WIDTH, 1]])
+    shadow_bottom.backgroundColor = :black.uicolor
+    y_line = UIView.alloc.initWithFrame([[0, 0], [1, LIST_HEIGHT - 1]])
+    y_line.backgroundColor = "#666".uicolor
+    highlight_bottom = UIView.alloc.initWithFrame([[PADDING, 
+                                                    LIST_HEIGHT - PADDING], 
+                                                   [USER_LIST_WIDTH - PADDING * 2, 
+                                                    1]])
+    highlight_bottom.backgroundColor = "#666".uicolor
+    users_view << highlight_bottom
+    users_view << highlight_top
+    users_view << shadow_bottom
+    users_view << y_line
+
+    users_view
+  end
+
+  def setup_context_view
+    context_view = UIView.alloc.initWithFrame([[0, LIST_HEIGHT], [768, 251]])
+    highlight_top = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH + USER_LIST_WIDTH, 1]])
+    highlight_top.backgroundColor = "#666".uicolor
+    highlight_bottom = UIView.alloc.initWithFrame([[PADDING, 
+                                                    251 - PADDING], 
+                                                   [BEER_LIST_WIDTH + USER_LIST_WIDTH - PADDING * 2, 
+                                                    1]])
+    highlight_bottom.backgroundColor = "#666".uicolor
+    context_view << highlight_bottom
+    context_view << highlight_top
+
+    context_view
+  end
 
   def setup_child_controllers
     beer_list_controller = BeerListController.new
-    beers_navigation = UINavigationController.alloc.initWithRootViewController(beer_list_controller)
-    set_beers_controller(beers_navigation)
-    update_beers_view
+    @beers_controller = UINavigationController.alloc.initWithRootViewController(beer_list_controller)
+    self.addChildViewController(@beers_controller)
+    @beers_controller.didMoveToParentViewController(self)
+    @beers_controller.view.frame = [[@beers_view.bounds.origin.x + PADDING,
+                                     @beers_view.bounds.origin.y + PADDING],
+                                    [@beers_view.bounds.size.width - PADDING * 2,
+                                     @beers_view.bounds.size.height - PADDING * 2]]
 
     user_list_controller = UserListController.new
-    users_navigation = UINavigationController.alloc.initWithRootViewController(user_list_controller)
-    set_users_controller(users_navigation)
-    update_users_view
+    @users_controller = UINavigationController.alloc.initWithRootViewController(user_list_controller)
+    self.addChildViewController(@users_controller)
+    @users_controller.didMoveToParentViewController(self)
+    @users_controller.view.frame = [[@users_view.bounds.origin.x + PADDING,
+                                     @users_view.bounds.origin.y + PADDING],
+                                    [@users_view.bounds.size.width - PADDING * 2,
+                                     @users_view.bounds.size.height - PADDING * 2]]
 
-    context_controller = ContextController.new
-    set_context_controller(context_controller)
-    update_context_view
+    @context_controller = ContextController.new
+    self.addChildViewController(@context_controller)
+    @context_controller.didMoveToParentViewController(self)
+    @context_controller.view.frame = [[@context_view.bounds.origin.x + PADDING,
+                                       @context_view.bounds.origin.y + PADDING],
+                                      [@context_view.bounds.size.width - PADDING * 2,
+                                       @context_view.bounds.size.height - PADDING * 2]]
 
+    @beers_view << @beers_controller.view
+    @users_view << @users_controller.view
+    @context_view << @context_controller.view
+
+    # TODO(Tres): Lazy load this?
     @pour_controller = PourController.new
-    @pour_controller.view.backgroundColor = UIColor.purpleColor
+    @pour_controller.view.backgroundColor = :purple.uicolor
   end
 
   def setup_handlers
-    # Setup faye handler
     @faye_handler = FayeHandler.new
     @faye_handler.setup
-    # @faye_handler.connect # don't need to connect here since settings are reloaded each time the app is opened
 
-    # Setup pour handler
     @pour_handler = PourHandler.new
     @pour_handler.setup
 
-    # Setup Settings handler
     @settings_handler = SettingsHandler.new
   end
 
@@ -107,60 +171,13 @@ class MainController < UIViewController
     @settings_observer = App.notification_center.observe "SettingsChangedNotification" { |_| reload_data }
   end
 
-# Handle child views/controllers
-
-  def update_beers_view
-    @beers_controller.view.frame = @beers_view.bounds
-    @beers_view.addSubview(@beers_controller.view)
-  end
-
-  def set_beers_controller(beers_controller)
-    @beers_controller = beers_controller
-
-    # handle view controller hierarchy
-    self.addChildViewController(@beers_controller)
-    @beers_controller.didMoveToParentViewController(self)
-
-    update_beers_view if isViewLoaded
-  end
-
-  def update_users_view
-    @users_controller.view.frame = @users_view.bounds
-    @users_view.addSubview(@users_controller.view)
-  end
-
-  def set_users_controller(users_controller)
-    @users_controller = users_controller
-
-    # handle view controller hierarchy
-    self.addChildViewController(@users_controller)
-    @users_controller.didMoveToParentViewController(self)
-
-    update_users_view if isViewLoaded
-  end
-
-  def update_context_view
-    @context_controller.view.frame = @context_view.bounds
-    @context_view.addSubview(@context_controller.view)
-  end
-
-  def set_context_controller(context_controller)
-    @context_controller = context_controller
-
-    # handle view controller hierarchy
-    self.addChildViewController(@context_controller)
-    @context_controller.didMoveToParentViewController(self)
-
-    update_context_view if isViewLoaded
-  end
-
 # Handle events
 
   def reload_settings
     puts ""
     puts "MainController > reload_settings"
 
-    # reload_data called after this completes via SettingsChangedNotification
+    # TODO(Tres): reload_data called after this completes via SettingsChangedNotification
     @settings_handler.reload_settings
   end
 
@@ -177,13 +194,14 @@ class MainController < UIViewController
 
   def pour_update(pour)
     puts ""
-    puts "MainController > pour_update > pour: #{pour}"
+    puts "MainController > pour_update"
 
     @current_pour = pour
     @current_user_id = pour.fetch(:user_id, 0).to_i if @current_user_id.nil?
 
-    @pour_handler.pour_update(pour, @current_user_id)
+    @pour_handler.pour_update(@current_pour, @current_user_id)
 
+    # TODO(Tres): Only perform pops if not already current view controler
     @beers_controller.popToRootViewControllerAnimated(false)
     @beers_controller.topViewController.select_beer(pour)
 
@@ -197,12 +215,14 @@ class MainController < UIViewController
       @context_view.addSubview(@context_controller.view)
       @pour_controller.view.slide(:up, 251) { }
     end
+
+    @pour_controller.update_pour(@current_pour)
   end
 
   def user_update(user)
     puts ""
-    puts "MainController > user_update > user: #{user}"
-    
+    puts "MainController > user_update"
+
     if user.has_key?(:id)
       @current_user_id = user[:id].to_i 
       puts "MainController > user_update: setting current_user_id to #{@current_user_id}"
@@ -216,11 +236,11 @@ class MainController < UIViewController
   end
 
   def reset_beer
-#    puts ""
-#    puts "MainController > reset_beer"
-#
-#    @beers_controller.popToRootViewControllerAnimated(false)
-#    @beers_controller.topViewController.reset
+    puts ""
+    puts "MainController > reset_beer"
+
+    # @beers_controller.popToRootViewControllerAnimated(false)
+    # @beers_controller.topViewController.reset
   end
 
   def reset_user(user)
