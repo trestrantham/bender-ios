@@ -6,7 +6,7 @@ class PourHandler
 
   def pour_update(pour, current_user_id)
     puts ""
-    puts "PourHandler > pour_update > pour: #{pour}"
+    puts "PourHandler > pour_update"
 
     # We can't do anything without a pour id
     return unless pour.has_key?(:id)
@@ -50,6 +50,9 @@ class PourHandler
   def update_pour_user(pour_id, user_id)
     puts ""
     puts "PourHandler > update_pour_user"
+
+    # Don't see guest updates
+    return unless user_id.to_i > 0
 
     pour_user = { pour: { user_id: user_id } }
 
