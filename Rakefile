@@ -12,6 +12,8 @@ Motion::Project::App.setup do |app|
 	app.name = 'bender-ios'
 	app.device_family = :ipad #[:ipad,:iphone]
 
+  # app.frameworks << "QuartzCore/CALayer"
+
 	app.pods do
 		pod 'SVPullToRefresh'
 	end
@@ -22,5 +24,5 @@ Motion::Project::App.setup do |app|
 
 	app.codesign_certificate = 'iPhone Developer: William Trantham III (3E8KX84744)'
 	app.identifier = '3MXD5J8GME.com.collectiveidea.bender'
-	app.provisioning_profile = '/Users/Tres/Downloads/iOS_Team_Provisioning_Profile_.mobileprovision'
+	app.provisioning_profile = '/Users/Tres/Downloads/iOS_Team_Provisioning_Profile_ChatApp.mobileprovision'
 end
