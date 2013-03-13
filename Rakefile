@@ -3,6 +3,7 @@ $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project'
 require 'bubble-wrap/reactor'
 require 'time'
+require 'sugarcube-attributedstring'
 require 'bundler'
 
 Bundler.require
