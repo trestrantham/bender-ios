@@ -1,4 +1,6 @@
 class BeerListController < UITableViewController
+  TEXT_COLOR_LIGHT = "#666".uicolor
+  
   def viewDidLoad
     super
 
@@ -7,7 +9,7 @@ class BeerListController < UITableViewController
     @beers_index_hash = {}
     @index_path = nil
 
-    tableView.rowHeight = 250
+    tableView.rowHeight = 232
     tableView.backgroundColor = "#333".uicolor
     tableView.separatorColor = :clear.uicolor
 
@@ -77,10 +79,18 @@ class BeerListController < UITableViewController
     end
 
     cell.beer_name.text = @beers[index_path.row][:name]
-    cell.beer_brewery.text = "Really Long Brewery Goes Here" 
-    cell.beer_style.text = "Style" 
-    cell.keg_volume_remaining.text = "37.4 oz Remaining"
-    cell.keg_volume_consumed.text = "21.9 oz Consumed"
+    cell.beer_brewery.text = "New Holland Brewery"
+
+    cell.set_beer_style "Imperial/Double IPA" 
+    cell.set_beer_abv "7.3"
+    cell.set_keg_tapped_on "September 31, 2013"
+    cell.set_keg_empty_on "December 28, 2013"
+
+    cell.keg_volume_remaining.text = "137.4"
+    cell.keg_volume_consumed.text = "21.9"
+
+    cell.show_shadow(:top) if index_path.row == 0
+    cell.show_shadow(:bottom) if index_path.row == @beers.size - 1
 
     cell
   end
