@@ -6,7 +6,7 @@ class UserListController < UITableViewController
     @users = []
     @users_index_hash = {}
 
-    tableView.rowHeight = 115
+    tableView.rowHeight = 66
     tableView.backgroundColor = "#333".uicolor
     tableView.separatorColor = :clear.uicolor
 
@@ -17,6 +17,11 @@ class UserListController < UITableViewController
     tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
 
     load_data
+    setup_observers
+  end
+
+  def viewDidUnload
+    @user_created_observer = nil
   end
 
   def load_data
@@ -41,6 +46,12 @@ class UserListController < UITableViewController
 
       tableView.reloadData
       tableView.pullToRefreshView.stopAnimating
+    end
+  end
+  
+  def setup_observers
+    @user_created_observer = App.notification_center.observe "UserCreatedNotification" do |_|
+      load_data      
     end
   end
 
@@ -90,6 +101,10 @@ class UserListController < UITableViewController
     end
 
     cell.user_name.text = @users[index_path.row][:name]
+    cell.set_user_email(@users[index_path.row][:email])
+    cell.last_drink.text = "Last pour on March 3, 2013"
+    cell.show_shadow(:top) if index_path.row == 0
+    cell.show_shadow(:bottom) if index_path.row == @users.size - 1
 
     cell
   end
