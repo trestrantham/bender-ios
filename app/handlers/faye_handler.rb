@@ -52,7 +52,7 @@ class FayeHandler
     @retry_count = @retry_count + 1
 
     EM.add_timer RETRY_WAIT do
-      try_connect if disconnected && @retry_count < MAX_RETRY
+      try_connect if disconnected && @retry_count <= MAX_RETRY
     end
 
     # send "could not connect" notification if @retry_count == MAX_RETRY
@@ -71,7 +71,7 @@ class FayeHandler
     puts ""
     puts "FayeHandler > disconnect"
 
-    @faye.disconnectFromServer if @faye
+    @faye.disconnectFromServer if @faye && @connected
     @faye = nil
   end
 

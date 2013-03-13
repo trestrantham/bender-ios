@@ -1,6 +1,6 @@
 class SettingsController < Formotion::FormController
-  attr_accessor :main_controller
-  @main_controller = nil
+  attr_accessor :parent_controller
+  @parent_controller = nil
 
   def init
     form = Formotion::Form.new({
@@ -101,8 +101,8 @@ class SettingsController < Formotion::FormController
         puts "#{@form_data[:api_url]}"
         App::Persistence[:api_url] = @form_data[:api_url]
         #AppHelper.reload_settings
-        #@main_controller.reload_data if @main_controller
-        @main_controller.reload_settings
+        #@parent_controller.reload_data if @parent_controller
+        @parent_controller.reload_settings
         self.dismissModalViewControllerAnimated(true)
       else
         App.alert("Server cannot be reached.")
