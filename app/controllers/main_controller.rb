@@ -71,47 +71,44 @@ class MainController < UIViewController
 
   def setup_users_view
     users_view = UIView.alloc.initWithFrame([[BEER_LIST_WIDTH, 0], [USER_LIST_WIDTH, LIST_HEIGHT]])
+    users_view = UIView.alloc.initWithFrame([[BEER_LIST_WIDTH, 0], [USER_LIST_WIDTH, LIST_HEIGHT]])
     highlight_top = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH, 1]])
     highlight_top.backgroundColor = "#666".uicolor
     shadow_bottom = UIView.alloc.initWithFrame([[0, LIST_HEIGHT - 1], [USER_LIST_WIDTH, 1]])
     shadow_bottom.backgroundColor = :black.uicolor
     y_line = UIView.alloc.initWithFrame([[0, 0], [1, LIST_HEIGHT - 1]])
     y_line.backgroundColor = "#666".uicolor
-    highlight_bottom = UIView.alloc.initWithFrame([[PADDING, 
-                                                    LIST_HEIGHT - PADDING * 2 - 44], # Allow for 'add user' button
-                                                   [USER_LIST_WIDTH - PADDING * 2, 
-                                                    1]])
-    highlight_button = UIView.alloc.initWithFrame([[PADDING, 
+    highlight_bottom = UIView.alloc.initWithFrame([[PADDING,
+                                                    # LIST_HEIGHT - PADDING * 2 - 44], # Allow for 'add user' button
                                                     LIST_HEIGHT - PADDING],
-                                                   [USER_LIST_WIDTH - PADDING * 2, 
+                                                   [USER_LIST_WIDTH - PADDING * 2,
                                                     1]])
     highlight_bottom.backgroundColor = "#666".uicolor
-    highlight_button.backgroundColor = "#666".uicolor
     users_view << highlight_bottom
     users_view << highlight_top
     users_view << shadow_bottom
     users_view << y_line
 
     # Setup our Add Drinker button
-    button_image = "button".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
-    button_image_selected = "button-selected".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
+    # button_image = "button".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
+    # button_image_selected = "button-selected".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
 
-    button = UIButton.custom
-    button.frame = [[20, LIST_HEIGHT - PADDING - 44], [USER_LIST_WIDTH - PADDING * 2, 45]]
-    button.setBackgroundImage(button_image, forState: UIControlStateNormal)
-    button.setBackgroundImage(button_image_selected, forState: UIControlStateHighlighted)
-    button.setTitle("Add Drinker", forState: UIControlStateNormal)
-    button.titleLabel.font = :bold.uifont(18)
+    # button = UIButton.custom
+    # button.frame = [[20, LIST_HEIGHT - PADDING - 44], [USER_LIST_WIDTH - PADDING * 2, 45]]
+    # button.setBackgroundImage(button_image, forState: UIControlStateNormal)
+    # button.setBackgroundImage(button_image_selected, forState: UIControlStateHighlighted)
+    # button.setTitle("Add Drinker", forState: UIControlStateNormal)
+    # button.titleLabel.font = :bold.uifont(18)
 
-    button.on(:touch) do
-      @add_user_controller ||= AddUserController.new
-      @add_user_controller.parent_controller = self
-      @add_user_navigation = UINavigationController.alloc.initWithRootViewController(@add_user_controller)
-      @add_user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
-      presentModalViewController(@add_user_navigation, animated: true)
-    end
+    # button.on(:touch) do
+    #   @add_user_controller ||= AddUserController.new
+    #   @add_user_controller.parent_controller = self
+    #   @add_user_navigation = UINavigationController.alloc.initWithRootViewController(@add_user_controller)
+    #   @add_user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
+    #   presentModalViewController(@add_user_navigation, animated: true)
+    # end
 
-    users_view << button
+    # users_view << button
 
     users_view
   end
@@ -130,10 +127,7 @@ class MainController < UIViewController
 
     context_view
   end
-def show_settings
-  puts ""
-  puts "MainController > show_settings"
-end
+
   def setup_child_controllers
     beer_list_controller = BeerListController.new
     @beers_controller = UINavigationController.alloc.initWithRootViewController(beer_list_controller)
@@ -144,14 +138,6 @@ end
                                     [@beers_view.bounds.size.width - PADDING * 2,
                                      @beers_view.bounds.size.height - PADDING * 2]]
 
-    beer_list_controller.navigationItem.leftBarButtonItem ||= UIBarButtonItem.edit do
-      @settings_controller ||= SettingsController.new
-      @settings_controller.parent_controller = self
-      @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings_controller)
-      @settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
-      presentModalViewController(@settings_navigation, animated: true)
-    end
-
     user_list_controller = UserListController.new
     @users_controller = UINavigationController.alloc.initWithRootViewController(user_list_controller)
     self.addChildViewController(@users_controller)
@@ -159,7 +145,16 @@ end
     @users_controller.view.frame = [[@users_view.bounds.origin.x + PADDING,
                                      @users_view.bounds.origin.y + PADDING],
                                     [@users_view.bounds.size.width - PADDING * 2,
-                                     @users_view.bounds.size.height - PADDING * 3 - 44]] # Allow for 'add user' button
+                                     @users_view.bounds.size.height - PADDING * 2]]
+                                     # @users_view.bounds.size.height - PADDING * 3 - 44]] # Allow for 'add user' button
+
+    user_list_controller.navigationItem.rightBarButtonItem ||= UIBarButtonItem.add do
+      @add_user_controller ||= AddUserController.new
+      @add_user_controller.parent_controller = self
+      @add_user_navigation = UINavigationController.alloc.initWithRootViewController(@add_user_controller)
+      @add_user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
+      presentModalViewController(@add_user_navigation, animated: true)
+    end
 
     @context_controller = ContextController.new
     self.addChildViewController(@context_controller)
@@ -169,13 +164,22 @@ end
                                       [@context_view.bounds.size.width - PADDING * 2,
                                        @context_view.bounds.size.height - PADDING * 2 + 5]] # +5 accomodates page controls
 
+    settings_button = UIButton.custom
+    settings_button.frame = [[BEER_LIST_WIDTH + USER_LIST_WIDTH - 41, 220], [20, 22]]
+    settings_button.setBackgroundImage("settings".uiimage, forState: UIControlStateNormal)
+
+    settings_button.on(:touch) do
+      @settings_controller ||= SettingsController.new
+      @settings_controller.parent_controller = self
+      @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings_controller)
+      @settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
+      presentModalViewController(@settings_navigation, animated: true)
+    end
+
     @beers_view << @beers_controller.view
     @users_view << @users_controller.view
     @context_view << @context_controller.view
-
-    # TODO(Tres): Lazy load this?
-    @pour_controller = PourController.new
-    @pour_controller.view.backgroundColor = :purple.uicolor
+    @context_view << settings_button # Must add to view after context_controller in order to stay in foreground
   end
 
   def setup_handlers
@@ -246,16 +250,6 @@ end
 
     @users_controller.popToRootViewControllerAnimated(false)
     @users_controller.topViewController.update_user(@current_user_id)
-
-    set_context_controller(@pour_controller)
-
-    unless @pour_controller.isViewLoaded && @pour_controller.view.window
-      @pour_controller.view.frame = [[0, 251], [@context_view.bounds.size.width, @context_view.bounds.size.height]]
-      @context_view.addSubview(@context_controller.view)
-      @pour_controller.view.slide(:up, 251) { }
-    end
-
-    @pour_controller.update_pour(@current_pour)
   end
 
   def user_update(user)
@@ -303,7 +297,6 @@ end
     @beers_controller.topViewController.reset_beer
 
     @current_pour = nil
-    @pour_controller.view.slide(:down, 251) { }
   end
 
   def supportedInterfaceOrientations

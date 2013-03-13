@@ -41,11 +41,6 @@ class SettingsController < Formotion::FormController
           auto_capitalization: :none,
           editable: false
         }]
-      }, {
-        rows: [{
-          title: "Save",
-          type: :submit,
-        }]
       }]
     })
 
@@ -58,6 +53,9 @@ class SettingsController < Formotion::FormController
   def viewDidLoad
     super
     self.title = "Settings"
+
+    self.navigationItem.leftBarButtonItem ||= UIBarButtonItem.cancel { cancel }
+    self.navigationItem.rightBarButtonItem ||= UIBarButtonItem.save { save }
   end
 
   def viewDidDisappear(animated)
@@ -108,5 +106,9 @@ class SettingsController < Formotion::FormController
         App.alert("Server cannot be reached.")
       end
     end
+  end
+
+  def cancel
+    self.dismissModalViewControllerAnimated(true)
   end
 end
