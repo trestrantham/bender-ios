@@ -2,6 +2,8 @@ class AppDelegate
   attr_accessor :main_controller
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    StyleController.apply_style
+
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @main_controller = MainController.new
     @window.rootViewController = @main_controller
