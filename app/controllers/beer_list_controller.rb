@@ -1,6 +1,6 @@
 class BeerListController < UITableViewController
   TEXT_COLOR_LIGHT = "#666".uicolor
-  
+
   def viewDidLoad
     super
 

@@ -5,7 +5,7 @@ class ActivityController < UIViewController
     self.title = "Recent Activity"
     @activities = [{name:"Tres T. poured 8.1 oz of Homebrew"}, {name:"David G. poured 6.3 oz of Homebrew"}, {name:"Tim B. poured 9.4 oz of Homebrew"}]
 
-    @table_view = UITableView.alloc.initWithFrame([[0, 0], [388, 211]], style: UITableViewStyleGrouped)
+    @table_view = UITableView.alloc.initWithFrame([[0, 0], [388, 191]], style: UITableViewStyleGrouped)
     @table_view.delegate = self
     @table_view.dataSource = self
     @table_view.separatorStyle = UITableViewCellSeparatorStyleNone
