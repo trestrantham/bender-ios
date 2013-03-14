@@ -3,9 +3,10 @@ class ActivityController < UIViewController
     super
 
     self.title = "Recent Activity"
-    @activities = [{name:"Tres T. poured 8.1 oz of Homebrew"}, {name:"David G. poured 6.3 oz of Homebrew"}, {name:"Tim B. poured 9.4 oz of Homebrew"}]
 
-    @table_view = UITableView.alloc.initWithFrame([[0, 0], [388, 191]], style: UITableViewStyleGrouped)
+    @activities = {}
+
+    @table_view = UITableView.grouped([[0, 0], [388, 191]])
     @table_view.delegate = self
     @table_view.dataSource = self
     @table_view.separatorStyle = UITableViewCellSeparatorStyleNone
@@ -13,7 +14,7 @@ class ActivityController < UIViewController
 
     self.view << @table_view
 
-    #load_data
+    load_data
   end
 
   def load_data
@@ -21,7 +22,7 @@ class ActivityController < UIViewController
 
     AppHelper.parse_api(:get, "/activity/recent.json") do |response|
       @activities = BW::JSON.parse response.body
-      
+      puts "#{@activities}"
       @table_view.reloadData
     end
   end
@@ -39,18 +40,60 @@ class ActivityController < UIViewController
   end
 
   def tableView(table_view, cellForRowAtIndexPath: index_path)
-    @reuseIdentifier ||= "CELL_IDENTIFIER"
+    @reuse_identifier ||= "CELL_IDENTIFIER"
 
-    cell = table_view.dequeueReusableCellWithIdentifier(@reuseIdentifier) || begin
-      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuseIdentifier)
+    cell = table_view.dequeueReusableCellWithIdentifier(@reuse_identifier) || begin
+      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
-    cell.textLabel.text = @activities[index_path.row][:name]
+    cell.textLabel.font = :system.uifont(14)
+    cell.textLabel.textColor = "#eee".uicolor
+    cell.textLabel.shadowColor = "#111".uicolor
+    cell.textLabel.shadowOffset = [0, -1]
+    cell.textLabel.numberOfLines = 0
+ 
+    activity = @activities[index_path.row]
+puts "#{@activities[index_path.row]}"
+    split = activity[:user_name].split
+    user_name = split[0]
+    user_name += " #{split[1][0]}." if split[1]
+
+    cell.textLabel.attributedText = "#{user_name}".attrd.bold + 
+                                    " poured " + 
+                                    "#{activity[:volume]}".attrd.bold +
+                                    " oz of " +
+                                    "#{activity[:beer_name]}".attrd.bold +
+                                    " " +
+                                    "#{AppHelper.parse_date_string(activity[:created_at], 'yyyy-MM-dd\'T\'HH:mm:ssz').relative_date_string}"
     cell.backgroundColor = :clear.uicolor
+
     cell
   end
 
   def tableView(table_view, didSelectRowAtIndexPath:index_path)
     table_view.deselectRowAtIndexPath(index_path, animated: true)
+  end
+
+  def tableView(table_view, heightForHeaderInSection: section)
+    44
+  end
+
+  def tableView(table_view, viewForHeaderInSection: section)
+    header_label = UILabel.new
+    header_label.frame = [[18, 0], [372, 44]]
+    header_label.font = :bold.uifont(18)
+    header_label.textColor = "#666".uicolor
+    header_label.shadowColor = "#111".uicolor
+    header_label.shadowOffset = [0, -1]
+    header_label.backgroundColor = :clear.uicolor
+    header_label.layer.shadowColor = "#eee".uicolor.CGColor
+    header_label.layer.shadowOffset = [0, 1]
+    header_label.clipsToBounds = false
+    header_label.text = "Recent Activity"
+
+    header_view = UIView.new
+    header_view << header_label
+
+    header_view
   end
 end
