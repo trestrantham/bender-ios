@@ -65,10 +65,6 @@ class UserListController < UITableViewController
                          animated: false,
                    scrollPosition: UITableViewScrollPositionNone)
 
-    # tableView.scrollToRowAtIndexPath(@index_path, 
-    #                atScrollPosition: UITableViewScrollPositionNone,
-    #                        animated: true)
-
     App.notification_center.post("UserUpdatedNotification", nil, @users[@users_index_hash[user_id]])
   end
 
@@ -100,9 +96,17 @@ class UserListController < UITableViewController
       UserCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
-    cell.user_name.text = @users[index_path.row][:name]
-    cell.set_user_email(@users[index_path.row][:email])
-    cell.last_drink.text = "Last pour on March 3, 2013"
+    user = @users[index_path.row]
+
+    cell.user_name.text = user[:name]
+    cell.set_user_email(user[:email])
+
+    cell.last_drink.text = if user[:last_pour_at].nil?
+                              "New drinker on #{AppHelper.parse_date_string(user[:created_at], 'yyyy-MM-dd\'T\'HH:mm:ssz', 'MMM d, yyyy')}"
+                            else
+                              "Last pour #{AppHelper.parse_date_string(user[:last_pour_at], 'yyyy-MM-dd\'T\'HH:mm:ssz').relative_date_string}"
+                            end
+
     cell.show_shadow(:top) if index_path.row == 0
     cell.show_shadow(:bottom) if index_path.row == @users.size - 1
 

@@ -1,10 +1,16 @@
 module AppHelper
   module_function
 
-  def parse_date_string(date_string, format_string = "yyyy-MM-dd HH:mm:ss z")
+  def parse_date_string(date_string, input_format = "yyyy-MM-dd HH:mm:ss z", output_format = nil)
     date_formatter = NSDateFormatter.alloc.init
-    date_formatter.dateFormat = format_string
+    date_formatter.dateFormat = input_format
     date = date_formatter.dateFromString date_string
+
+    if output_format
+      date_formatter.dateFormat = output_format
+      date = date_formatter.stringFromDate date
+    end
+
     date
   end
 
@@ -66,5 +72,48 @@ class NSArray
     ptr = Pointer.new(type, self.size)
     self.each_with_index {|value, idx| ptr[idx] = value }
     ptr
+  end
+end
+
+class NSDate
+  SECOND = 1
+  MINUTE = 60 * SECOND
+  HOUR = 60 * MINUTE
+  DAY = 24 * HOUR
+  MONTH = 30 * DAY
+ 
+  def relative_date_string
+    now = NSDate.date
+    delta = self.timeIntervalSinceDate(now) * -1
+
+    calendar = NSCalendar.currentCalendar
+    units = (NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit)
+    components = calendar.components(units, fromDate: self, toDate: now, options: 0)
+
+    relative_string = ""
+
+    if delta < 0
+        relative_string = "!n the future!"
+    elsif delta < 1 * MINUTE
+        relative_string = components.second == 1 ? "One second ago" : "#{components.second} seconds ago"
+    elsif delta < 2 * MINUTE
+        relative_string = "a minute ago"
+    elsif delta < 45 * MINUTE
+        relative_string = "#{components.minute} minutes ago"
+    elsif delta < 90 * MINUTE
+        relative_string = "an hour ago"
+    elsif delta < 24 * HOUR
+        relative_string = "#{components.hour} hours ago"
+    elsif delta < 48 * HOUR
+        relative_string = "yesterday"
+    elsif delta < 30 * DAY
+        relative_string = "#{components.day} days ago"
+    elsif delta < 12 * MONTH
+        relative_string = components.month <= 1 ? "one month ago" : "#{components.month} months ago"
+    else
+        relative_string = components.year <= 1 ? "one year ago" : "#{components.year} years ago"
+    end
+
+    return relative_string;
   end
 end
