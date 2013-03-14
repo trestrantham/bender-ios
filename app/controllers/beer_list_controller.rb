@@ -78,16 +78,17 @@ class BeerListController < UITableViewController
       BeerCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
-    cell.beer_name.text = @beers[index_path.row][:name]
+    beer = @beers[index_path.row]
+    cell.beer_name.text = beer[:name]
     cell.beer_brewery.text = "New Holland Brewery"
 
     cell.set_beer_style "Imperial/Double IPA" 
     cell.set_beer_abv "7.3"
-    cell.set_keg_tapped_on "September 31, 2013"
-    cell.set_keg_empty_on "December 28, 2013"
+    cell.set_keg_tapped_on "#{AppHelper.parse_date_string(beer[:started_at], 'yyyy-MM-dd\'T\'HH:mm:ssz').relative_date_string}"
+    cell.set_keg_empty_on beer[:projected_empty]
 
-    cell.keg_volume_remaining.text = "137.4"
-    cell.keg_volume_consumed.text = "21.9"
+    cell.keg_volume_remaining.text = beer[:remaining]
+    cell.keg_volume_poured.text = beer[:poured]
 
     cell.show_shadow(:top) if index_path.row == 0
     cell.show_shadow(:bottom) if index_path.row == @beers.size - 1
