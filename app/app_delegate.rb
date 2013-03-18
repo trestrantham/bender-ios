@@ -11,7 +11,7 @@ class AppDelegate
 
     if App::Persistence[:api_url].blank? || !AppHelper.valid_url?(App::Persistence[:api_url])
       @settings ||= SettingsController.new
-      @settings.main_controller = @main_controller
+      @settings.parent_controller = @main_controller
       @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings)
       @settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
       @main_controller.presentModalViewController(@settings_navigation, animated:false)
