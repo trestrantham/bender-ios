@@ -82,38 +82,45 @@ class NSDate
   DAY = 24 * HOUR
   MONTH = 30 * DAY
  
-  def relative_date_string
+  def relative_date_string(capitalize = false)
     now = NSDate.date
-    delta = self.timeIntervalSinceDate(now) * -1
+    delta = self.timeIntervalSinceDate(now)
 
     calendar = NSCalendar.currentCalendar
     units = (NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit)
     components = calendar.components(units, fromDate: self, toDate: now, options: 0)
 
     relative_string = ""
+    seconds = components.second.abs
+    minutes = components.minute.abs
+    hours = components.hour.abs
+    days = components.day.abs
+    months = components.month.abs
+    years = components.year.abs
 
-    if delta < 0
-        relative_string = "!n the future!"
-    elsif delta < 1 * MINUTE
-        relative_string = components.second == 1 ? "One second ago" : "#{components.second} seconds ago"
-    elsif delta < 2 * MINUTE
-        relative_string = "a minute ago"
-    elsif delta < 45 * MINUTE
-        relative_string = "#{components.minute} minutes ago"
-    elsif delta < 90 * MINUTE
-        relative_string = "an hour ago"
-    elsif delta < 24 * HOUR
-        relative_string = "#{components.hour} hours ago"
-    elsif delta < 48 * HOUR
-        relative_string = "yesterday"
-    elsif delta < 30 * DAY
-        relative_string = "#{components.day} days ago"
-    elsif delta < 12 * MONTH
-        relative_string = components.month <= 1 ? "one month ago" : "#{components.month} months ago"
+    if delta.abs < 1 * MINUTE
+        relative_string = seconds == 1 ? "one second" : "#{seconds} seconds"
+    elsif delta.abs < 2 * MINUTE
+        relative_string = "a minute"
+    elsif delta.abs < 45 * MINUTE
+        relative_string = "#{seconds >= 45 ? minutes + 1 : minutes} minutes"
+    elsif delta.abs < 90 * MINUTE
+        relative_string = "an hour"
+    elsif delta.abs < 24 * HOUR
+        relative_string = "#{minutes >= 45 ? hours + 1 : hours} hours"
+    elsif delta.abs < 48 * HOUR
+        relative_string = delta < 0 ? "yesterday" : "tomorrow"
+    elsif delta.abs < 30 * DAY
+        relative_string = "#{hours >= 18 ? days + 1 : days} days"
+    elsif delta.abs < 12 * MONTH
+        relative_string = months <= 1 ? "one month" : "#{months} months"
     else
-        relative_string = components.year <= 1 ? "one year ago" : "#{components.year} years ago"
+        relative_string = years <= 1 ? "one year" : "#{years} years"
     end
 
-    return relative_string;
+    relative_string = ( delta < 0 ? "#{relative_string} ago" : "in #{relative_string}" ) unless ["yesterday", "tomorrow"].include? relative_string
+    relative_string = relative_string.slice(0, 1).capitalize + relative_string.slice(1..-1) if capitalize
+
+    relative_string
   end
 end
