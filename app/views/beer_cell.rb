@@ -50,11 +50,11 @@ class BeerCell < UITableViewCell
     [@beer_name, @beer_brewery].each { |label| label.font = :bold.uifont(18) }
     [@keg_volume_remaining, @keg_volume_poured].each { |label| label.font = :bold.uifont(26) }
     [@keg_volume_remaining, @keg_volume_poured, @keg_volume_remaining_label, @keg_volume_poured_label].each { |label| label.textAlignment = NSTextAlignmentCenter }
-    @keg_volume_remaining_label.text = "oz Remaining"
-    @keg_volume_poured_label.text = "oz Consumed"
+    @keg_volume_remaining_label.text = "OZ REMAINING"
+    @keg_volume_poured_label.text = "OZ POURED"
 
     [@keg_volume_remaining_label, @keg_volume_poured_label].each do |label|
-      label.font = :system.uifont(12)
+      label.font = :system.uifont(10)
       label.textColor = TEXT_COLOR_LIGHT
     end
 
@@ -64,10 +64,10 @@ class BeerCell < UITableViewCell
 
     @beer_name.frame = [[label_inset, PADDING], [label_width, 50]]
     @beer_brewery.frame = [[label_inset, 50 + PADDING], [label_width, 50]]
-    @beer_style.frame = [[label_inset, 100 + PADDING], [label_width, 25]]
-    @beer_abv.frame = [[label_inset, 125 + PADDING], [label_width, 25]]
-    @keg_tapped_on.frame = [[label_inset, 150 + PADDING], [label_width, 25]]
-    @keg_empty_on.frame = [[label_inset, 175 + PADDING], [label_width, 25]]
+    @beer_style.frame = [[label_inset, 100 + PADDING + 3], [label_width, 25]]
+    @beer_abv.frame = [[label_inset, 125 + PADDING + 3], [label_width, 25]]
+    @keg_tapped_on.frame = [[label_inset, 150 + PADDING + 3], [label_width, 25]]
+    @keg_empty_on.frame = [[label_inset, 175 + PADDING + 3], [label_width, 25]]
     @keg_volume_remaining.frame = [[PADDING, IMAGE_WIDTH + PADDING * 2], [IMAGE_WIDTH, 50 - PADDING * 3]]
     @keg_volume_remaining_label.frame = [[PADDING, IMAGE_WIDTH + 50 - PADDING], [IMAGE_WIDTH, PADDING * 2]]
     @keg_volume_poured.frame = [[PADDING, IMAGE_WIDTH +  PADDING * 2 + 50], [IMAGE_WIDTH, 50 - PADDING * 3]]
@@ -100,10 +100,11 @@ class BeerCell < UITableViewCell
         instance_variable_get("@#{label}").textColor = "#eee".uicolor
       end
 
-      @beer_style.attributedText = "Style: ".attrd.color(TEXT_SELECTED_COLOR_LIGHT).italic + "#{@beer_style_text}".bold
-      @beer_abv.attributedText = "ABV: ".attrd.color(TEXT_SELECTED_COLOR_LIGHT).italic + "#{@beer_abv_text}%".bold
-      @keg_tapped_on.attributedText = "Tapped: ".attrd.color(TEXT_SELECTED_COLOR_LIGHT).italic + "#{@keg_tapped_on_text}".bold
-      @keg_empty_on.attributedText = "Estimated Finish: ".attrd.color(TEXT_SELECTED_COLOR_LIGHT).italic + "#{@keg_empty_on_text}".bold
+      set_beer_style(@beer_style_text, TEXT_SELECTED_COLOR_LIGHT)
+      set_beer_abv(@beer_abv_text, TEXT_SELECTED_COLOR_LIGHT)
+      set_keg_tapped_on(@keg_tapped_on_text, TEXT_SELECTED_COLOR_LIGHT)
+      set_keg_empty_on(@keg_empty_on_text, TEXT_SELECTED_COLOR_LIGHT)
+
       @keg_volume_remaining_label.textColor = TEXT_SELECTED_COLOR_LIGHT
       @keg_volume_poured_label.textColor = TEXT_SELECTED_COLOR_LIGHT
     else
@@ -115,37 +116,38 @@ class BeerCell < UITableViewCell
         instance_variable_get("@#{label}").textColor = "#111".uicolor
       end
 
-      @beer_style.attributedText = "Style: ".attrd.color(TEXT_COLOR_LIGHT).italic + "#{@beer_style_text}".bold
-      @beer_abv.attributedText = "ABV: ".attrd.color(TEXT_COLOR_LIGHT).italic + "#{@beer_abv_text}%".bold
-      @keg_tapped_on.attributedText = "Tapped: ".attrd.color(TEXT_COLOR_LIGHT).italic + "#{@keg_tapped_on_text}".bold
-      @keg_empty_on.attributedText = "Estimated Finish: ".attrd.color(TEXT_COLOR_LIGHT).italic + "#{@keg_empty_on_text}".bold
+      set_beer_style(@beer_style_text, TEXT_COLOR_LIGHT)
+      set_beer_abv(@beer_abv_text, TEXT_COLOR_LIGHT)
+      set_keg_tapped_on(@keg_tapped_on_text, TEXT_COLOR_LIGHT)
+      set_keg_empty_on(@keg_empty_on_text, TEXT_COLOR_LIGHT)
+
       @keg_volume_remaining_label.textColor = TEXT_COLOR_LIGHT
       @keg_volume_poured_label.textColor = TEXT_COLOR_LIGHT
     end
   end
 
-  def set_beer_style(text)
+  def set_beer_style(text, color = TEXT_COLOR_LIGHT)
     @beer_style_text = text
 
-    @beer_style.attributedText = "Style: ".attrd.color(TEXT_COLOR_LIGHT) + "#{@beer_style_text}".bold
+    @beer_style.attributedText = "STYLE   ".attrd.color(color).font(:system.uifont(10)) + "#{@beer_style_text}".bold
   end
 
-  def set_beer_abv(text)
+  def set_beer_abv(text, color = TEXT_COLOR_LIGHT)
     @beer_abv_text = text
 
-    @beer_abv.attributedText = "ABV: ".attrd.color(TEXT_COLOR_LIGHT) + "#{@beer_abv_text}%".bold
+    @beer_abv.attributedText = "ABV   ".attrd.color(color).font(:system.uifont(10)) + "#{@beer_abv_text.to_f.round(1)}%".bold
   end
 
-  def set_keg_tapped_on(text)
+  def set_keg_tapped_on(text, color = TEXT_COLOR_LIGHT)
     @keg_tapped_on_text = text
 
-    @keg_tapped_on.attributedText = "Tapped: ".attrd.color(TEXT_COLOR_LIGHT) + "#{@keg_tapped_on_text}".bold
+    @keg_tapped_on.attributedText = "TAPPED   ".attrd.color(color).font(:system.uifont(10)) + "#{@keg_tapped_on_text}".bold
   end
 
-  def set_keg_empty_on(text)
+  def set_keg_empty_on(text, color = TEXT_COLOR_LIGHT)
     @keg_empty_on_text = text
 
-    @keg_empty_on.attributedText = "Estimated Finish: ".attrd.color(TEXT_COLOR_LIGHT) + "#{@keg_empty_on_text}".bold
+    @keg_empty_on.attributedText = "ESTIMATED FINISH   ".attrd.color(color).font(:system.uifont(10)) + "#{@keg_empty_on_text}".bold
   end
 
   def show_shadow(direction = :bottom)
