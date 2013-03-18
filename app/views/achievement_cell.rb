@@ -1,5 +1,5 @@
 class AchievementCell < UITableViewCell
-  attr_accessor :achievement_name, :achievement_desc, :name, :value
+  attr_accessor :name, :desc, :user_name, :value
 
   CELL_WIDTH = 300
   CELL_HEIGHT = 44
@@ -26,39 +26,39 @@ class AchievementCell < UITableViewCell
     bottom_line_view.backgroundColor = "#111".uicolor
     self << bottom_line_view
 
-    @achievement_name = UILabel.alloc.initWithFrame([[PADDING, 
+    @name = UILabel.alloc.initWithFrame([[PADDING, 
                                                       5], 
                                                      [CELL_WIDTH / 2,
                                                       21]])
-    @achievement_name.font = :bold.uifont(18)
-    @achievement_name.textColor = "#a6cce6".uicolor
-    @achievement_name.backgroundColor = :clear.uicolor
-    @achievement_name.adjustsFontSizeToFitWidth = true
-    @achievement_name.shadowColor = "#111".uicolor
-    @achievement_name.shadowOffset = [0, -1]
-
-    @achievement_desc = UILabel.alloc.initWithFrame([[PADDING, 
-                                                      27], 
-                                                     [CELL_WIDTH / 2, 
-                                                      10]])
-    @achievement_desc.font = :system.uifont(10)
-    @achievement_desc.textColor = "#999".uicolor
-    @achievement_desc.backgroundColor = :clear.uicolor
-    @achievement_desc.adjustsFontSizeToFitWidth = true
-    @achievement_desc.shadowColor = "#111".uicolor
-    @achievement_desc.shadowOffset = [0, -1]
-
-    @name = UILabel.alloc.initWithFrame([[CELL_WIDTH / 2 + PADDING, 
-                                          5], 
-                                         [CELL_WIDTH / 2 - PADDING * 2, 
-                                          21]])
     @name.font = :bold.uifont(18)
-    @name.textAlignment = UITextAlignmentRight
-    @name.textColor = "#eee".uicolor
+    @name.textColor = "#a6cce6".uicolor
     @name.backgroundColor = :clear.uicolor
     @name.adjustsFontSizeToFitWidth = true
     @name.shadowColor = "#111".uicolor
     @name.shadowOffset = [0, -1]
+
+    @desc = UILabel.alloc.initWithFrame([[PADDING, 
+                                                      27], 
+                                                     [CELL_WIDTH / 2, 
+                                                      10]])
+    @desc.font = :system.uifont(10)
+    @desc.textColor = "#999".uicolor
+    @desc.backgroundColor = :clear.uicolor
+    @desc.adjustsFontSizeToFitWidth = true
+    @desc.shadowColor = "#111".uicolor
+    @desc.shadowOffset = [0, -1]
+
+    @user_name = UILabel.alloc.initWithFrame([[CELL_WIDTH / 2 + PADDING, 
+                                          5], 
+                                         [CELL_WIDTH / 2 - PADDING * 2, 
+                                          21]])
+    @user_name.font = :bold.uifont(18)
+    @user_name.textAlignment = UITextAlignmentRight
+    @user_name.textColor = "#eee".uicolor
+    @user_name.backgroundColor = :clear.uicolor
+    @user_name.adjustsFontSizeToFitWidth = true
+    @user_name.shadowColor = "#111".uicolor
+    @user_name.shadowOffset = [0, -1]
 
     @value = UILabel.alloc.initWithFrame([[CELL_WIDTH / 2 + PADDING,
                                            27],
@@ -72,9 +72,9 @@ class AchievementCell < UITableViewCell
     @value.shadowColor = "#111".uicolor
     @value.shadowOffset = [0, -1]
 
-    self << @achievement_name
-    self << @achievement_desc
     self << @name
+    self << @desc
+    self << @user_name
     self << @value
 
     self
