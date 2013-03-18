@@ -44,6 +44,10 @@ class MainController < UIViewController
     @beers_view = nil
     @users_view = nil
     @context_view = nil
+    @pour_update_observer = nil
+    @settings_observer = nil
+    @user_timeout_observer = nil
+    @user_update_observer = nil
   end
 
 # Setup
@@ -89,40 +93,14 @@ class MainController < UIViewController
     users_view << shadow_bottom
     users_view << y_line
 
-    # Setup our Add Drinker button
-    # button_image = "button".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
-    # button_image_selected = "button-selected".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
-
-    # button = UIButton.custom
-    # button.frame = [[20, LIST_HEIGHT - PADDING - 44], [USER_LIST_WIDTH - PADDING * 2, 45]]
-    # button.setBackgroundImage(button_image, forState: UIControlStateNormal)
-    # button.setBackgroundImage(button_image_selected, forState: UIControlStateHighlighted)
-    # button.setTitle("Add Drinker", forState: UIControlStateNormal)
-    # button.titleLabel.font = :bold.uifont(18)
-
-    # button.on(:touch) do
-    #   @add_user_controller ||= AddUserController.new
-    #   @add_user_controller.parent_controller = self
-    #   @add_user_navigation = UINavigationController.alloc.initWithRootViewController(@add_user_controller)
-    #   @add_user_navigation.modalPresentationStyle = UIModalPresentationFormSheet
-    #   presentModalViewController(@add_user_navigation, animated: true)
-    # end
-
-    # users_view << button
-
     users_view
   end
 
   def setup_context_view
     context_view = UIView.alloc.initWithFrame([[0, LIST_HEIGHT], [768, 251]])
+    context_view.backgroundColor = "#444".uicolor
     highlight_top = UIView.alloc.initWithFrame([[0, 0], [BEER_LIST_WIDTH + USER_LIST_WIDTH, 1]])
     highlight_top.backgroundColor = "#666".uicolor
-    highlight_bottom = UIView.alloc.initWithFrame([[PADDING, 
-                                                    251 - PADDING - 20], 
-                                                   [BEER_LIST_WIDTH + USER_LIST_WIDTH - PADDING * 2, 
-                                                    1]])
-    highlight_bottom.backgroundColor = "#666".uicolor
-    context_view << highlight_bottom
     context_view << highlight_top
 
     context_view
@@ -159,13 +137,10 @@ class MainController < UIViewController
     @context_controller = ContextController.new
     self.addChildViewController(@context_controller)
     @context_controller.didMoveToParentViewController(self)
-    @context_controller.view.frame = [[@context_view.bounds.origin.x + PADDING,
-                                       @context_view.bounds.origin.y + PADDING],
-                                      [@context_view.bounds.size.width - PADDING * 2,
-                                       @context_view.bounds.size.height - PADDING * 2 + 5]] # +5 accomodates page controls
+    @context_controller.view.frame = @context_view.bounds
 
     settings_button = UIButton.custom
-    settings_button.frame = [[BEER_LIST_WIDTH + USER_LIST_WIDTH - 41, 220], [20, 22]]
+    settings_button.frame = [[BEER_LIST_WIDTH + USER_LIST_WIDTH - 30, 225], [20, 22]]
     settings_button.setBackgroundImage("settings".uiimage, forState: UIControlStateNormal)
 
     settings_button.on(:touch) do
