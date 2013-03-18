@@ -5,6 +5,8 @@ class PourController < UIViewController
     self.title = "Pour"
     self.view.backgroundColor = :clear.uicolor
 
+    self.view = ShadowBox.alloc.initWithFrame(self.view.bounds)
+
     @beer_image_view = UIImageView.alloc.initWithImage("beer_complete1".uiimage)
     @beer_image_view.frame = [[8, 8], [106, 176]]
     self.view << @beer_image_view
