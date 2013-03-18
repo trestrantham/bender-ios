@@ -7,6 +7,7 @@ class UserCell < UITableViewCell
   PADDING = 8
 
   TEXT_SELECTED_COLOR_LIGHT = "#a6cce6".uicolor
+  BACKGROUND_SELECTED_COLOR = "#2481c2".uicolor
 
   def initWithStyle(style, reuseIdentifier: cell_identifier)
     super
@@ -17,13 +18,17 @@ class UserCell < UITableViewCell
 
     # Create a container to hold all our cell views and to set a background color
     @container = UIView.alloc.initWithFrame([[0, 0], [CELL_WIDTH, CELL_HEIGHT]])
-    # @container.backgroundColor = "#555".uicolor
+    self.backgroundView = @container
  
-    highlight_top = UIView.alloc.initWithFrame([[0, 0], [CELL_WIDTH, 1]])
-    highlight_top.backgroundColor = "#494949".uicolor
+    # Top highlight line
+    top_line_view = UIView.alloc.initWithFrame([[0, 0], [CELL_WIDTH, 1]])
+    top_line_view.backgroundColor = "#494949".uicolor
+    self << top_line_view
 
-    shadow_bottom = UIView.alloc.initWithFrame([[0, CELL_HEIGHT - 1],[CELL_WIDTH, 1]])
-    shadow_bottom.backgroundColor = "#111".uicolor
+    # Bottom highlight line
+    bottom_line_view = UIView.alloc.initWithFrame([[0, CELL_HEIGHT - 1], [CELL_WIDTH, 1]])
+    bottom_line_view.backgroundColor = "#111".uicolor
+    self << bottom_line_view
 
     user_image = "user#{rand(4) + 1}.jpg".uiimage
     @user_image_view = UIImageView.alloc.initWithImage(user_image)
@@ -59,20 +64,16 @@ class UserCell < UITableViewCell
     @last_drink.shadowColor = "#111".uicolor
     @last_drink.shadowOffset = [0, -1]
 
-    @container << highlight_top
-    @container << shadow_bottom
-    @container << @user_image_view
-    @container << @user_name
-    @container << @last_drink
-
-    self << @container
+    self << @user_image_view
+    self << @user_name
+    self << @last_drink
 
     self
   end
 
   def setSelected(selected, animated: animated)
     if selected
-      @container.backgroundColor = "#2481c2".uicolor
+      @container.backgroundColor = BACKGROUND_SELECTED_COLOR
     
       [:user_name, :last_drink].each do |label|
         instance_variable_get("@#{label}").shadowColor = "#333".uicolor
