@@ -17,9 +17,11 @@ class ContextController < UIViewController
     @scroll_view.showsHorizontalScrollIndicator = false
     @scroll_view.showsVerticalScrollIndicator = false
 
-    @page_control = UIPageControl.alloc.init
-    @page_control.frame = [[0, SCROLL_PAGE_HEIGHT], [768, 10]] 
-    @page_control.numberOfPages = NUM_PAGES 
+    @page_control = ContextPageControl.alloc.init
+    @page_control.setImageNormal "page_control_normal".uiimage
+    @page_control.setImageCurrent "page_control_current".uiimage
+    @page_control.frame = [[0, SCROLL_PAGE_HEIGHT], [768, 10]]
+    @page_control.numberOfPages = NUM_PAGES
     @page_control.currentPage = 0
     @page_control.addTarget(self, action: "change_page", forControlEvents: UIControlEventValueChanged)
 
