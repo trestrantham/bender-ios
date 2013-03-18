@@ -8,20 +8,28 @@ class UserListController < UITableViewController
 
     tableView.rowHeight = 66
     tableView.backgroundColor = "#333".uicolor
-    tableView.separatorColor = :clear.uicolor
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone
 
     tableView.layer.masksToBounds = true
     tableView.layer.borderColor = :black.uicolor.CGColor
     tableView.layer.borderWidth = 1
 
-    tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
+    @refresh_control = UIRefreshControl.new
+    @refresh_control.addTarget(self, action: "load_data", forControlEvents: UIControlEventValueChanged)
+    @refresh_control.tintColor = "#2481c2".uicolor
+    self.refreshControl = @refresh_control
 
     load_data
+
     setup_observers
   end
 
   def viewDidUnload
+    App.notification_center.unobserve "UserCreatedNotification"
+    App.notification_center.unobserve "PourTimeoutNotification"
+
     @user_created_observer = nil
+    @pour_timeout_observer = nil
   end
 
   def load_data
@@ -29,6 +37,7 @@ class UserListController < UITableViewController
     puts "UserListController > load_data"
 
     return if App::Persistence[:api_url].blank?
+    @refresh_control.tintColor = "#a6cce6".uicolor
 
     AppHelper.parse_api(:get, "/users.json") do |response|
       # TODO(Tres): Add error checking
@@ -45,13 +54,30 @@ class UserListController < UITableViewController
       @users.each_with_index { |user, index| @users_index_hash[user[:id].to_i] = index }
 
       tableView.reloadData
-      tableView.pullToRefreshView.stopAnimating
+      @refresh_control.endRefreshing
+      @refresh_control.tintColor = "#2481c2".uicolor
     end
   end
   
+  def refresh_time_views
+    puts "refreshing user list times"
+      
+    selected_row = tableView.indexPathForSelectedRow
+    tableView.reloadRowsAtIndexPaths(tableView.indexPathsForVisibleRows, withRowAnimation: UITableViewRowAnimationNone)      
+    tableView.selectRowAtIndexPath(selected_row, animated: false, scrollPosition: UITableViewScrollPositionNone) if selected_row
+  end
+
   def setup_observers
     @user_created_observer = App.notification_center.observe "UserCreatedNotification" do |_|
       load_data      
+    end
+
+    @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+      load_data
+    end
+
+    @refresh_time_views_observer = App.notification_center.observe "RefreshTimeViewsNotification" do |_|
+      refresh_time_views
     end
   end
 

@@ -17,9 +17,20 @@ class BeerListController < UITableViewController
     tableView.layer.borderColor = :black.uicolor.CGColor
     tableView.layer.borderWidth = 1
 
-    tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
+    @refresh_control = UIRefreshControl.new
+    @refresh_control.addTarget(self, action: "load_data", forControlEvents: UIControlEventValueChanged)
+    self.refreshControl = @refresh_control
 
     load_data
+
+    @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+      load_data
+    end
+  end
+
+  def viewDidUnload
+    App.notification_center.unobserve @pour_timeout_observer
+    @pour_timeout_observer = nil
   end
 
   def load_data
@@ -37,7 +48,7 @@ class BeerListController < UITableViewController
       @beers.each_with_index { |beer, index| @beers_index_hash[beer[:beer_tap_id].to_i] = index }
 
       tableView.reloadData
-      tableView.pullToRefreshView.stopAnimating
+      @refresh_control.endRefreshing
     end
   end
 
@@ -80,15 +91,21 @@ class BeerListController < UITableViewController
 
     beer = @beers[index_path.row]
     cell.beer_name.text = beer[:name]
-    cell.beer_brewery.text = "New Holland Brewery"
+    cell.beer_brewery.text = beer[:brewery]
 
-    cell.set_beer_style "Imperial/Double IPA" 
-    cell.set_beer_abv "7.3"
+    cell.set_beer_style beer[:style]
+    cell.set_beer_abv beer[:abv]
     cell.set_keg_tapped_on "#{AppHelper.parse_date_string(beer[:started_at], 'yyyy-MM-dd\'T\'HH:mm:ssz').relative_date_string}"
-    cell.set_keg_empty_on beer[:projected_empty]
 
-    cell.keg_volume_remaining.text = beer[:remaining]
-    cell.keg_volume_poured.text = beer[:poured]
+    empty_date = AppHelper.parse_date_string(beer[:projected_empty], "yyyy-MM-dd\'T\'HH:mm:ssz")
+    if empty_date
+      cell.set_keg_empty_on "#{empty_date.relative_date_string(true)}"
+    else
+      cell.set_keg_empty_on "--"
+    end
+
+    cell.keg_volume_remaining.text = beer[:remaining].to_f.round(1).to_s
+    cell.keg_volume_poured.text = beer[:poured].to_f.round(1).to_s
 
     cell.show_shadow(:top) if index_path.row == 0
     cell.show_shadow(:bottom) if index_path.row == @beers.size - 1
