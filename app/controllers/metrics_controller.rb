@@ -5,6 +5,7 @@ class MetricsController < UITableViewController
     @activities = [{name:"metrics"}, {name:"foo"}, {name:"bar"}, {name:"baz"}]
     #tableView.addPullToRefreshWithActionHandler( Proc.new { load_data } )
     #load_data
+    # self.view << ShadowBox.initWithFrame([[20, 20], [100, 100]])
   end
 
   def load_data
