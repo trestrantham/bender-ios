@@ -32,7 +32,6 @@ class ActivityController < UIViewController
     @pours_label.shadowColor = "#111".uicolor
     @pours_label.shadowOffset = [0, -1]
     @pours_label.backgroundColor = :clear.uicolor
-    # @pours_label.backgroundColor = :orange.uicolor
     @pours_label.layer.shadowColor = "#eee".uicolor.CGColor
     @pours_label.layer.shadowOffset = [0, 1]
     @pours_label.clipsToBounds = false
@@ -48,7 +47,6 @@ class ActivityController < UIViewController
     @activity_table_view.backgroundView = nil
     @activity_table_view.backgroundColor = :clear.uicolor
     @activity_table_view.layer.cornerRadius = 5
-
     activity_view << @activity_table_view
     self.view << activity_view
 
@@ -67,9 +65,10 @@ class ActivityController < UIViewController
     self.view << @achievements_label
 
     achievements_view = ShadowBox.alloc.initWithFrame([[ACTIVITY_WIDTH + PADDING * 3, PADDING / 2 + HEADER_HEIGHT], [ACHIEVEMENTS_WIDTH, 251 - 40 - HEADER_HEIGHT]])
-    @achievements_tableview = AchievementsController.alloc.initWithStyle(UITableViewStylePlain)
-    @achievements_tableview.view.frame = achievements_view.bounds
-    achievements_view << @achievements_tableview.view
+    @achievements_table_view = AchievementsController.alloc.initWithStyle(UITableViewStylePlain)
+    @achievements_table_view.view.frame = achievements_view.bounds
+    @achievements_table_view.tableView.layer.cornerRadius = 5
+    achievements_view << @achievements_table_view.view
     self.view << achievements_view
 
   end

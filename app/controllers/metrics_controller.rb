@@ -14,7 +14,7 @@ class MetricsController < UITableViewController
     AppHelper.parse_api(:get, "/activity/recent.json") do |response|
       json = p response.body.to_str
       @activities = BW::JSON.parse json
-      
+
       @table.reloadData
       @table.pullToRefreshView.stopAnimating
     end

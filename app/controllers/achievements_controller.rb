@@ -2,10 +2,7 @@ class AchievementsController < UITableViewController
   def viewDidLoad
     super
 
-    # tableView.rowHeight = 52
-    @achievements = [{achievement_name: "The Lush", achievement_desc: "MOST TOTAL OZ POURED", name: "Tres T.", value: 123.45}, 
-                     {achievement_name: "Designated Driver", achievement_desc: "LEAST TOTAL OZ POURED", name: "Dan M.", value: 1.2}, 
-                     {achievement_name: "Big Gulp", achievement_desc: "LARGEST SINGLE POUR", name: "David G.", value: 23.9}]
+    @achievements = []
 
     tableView.backgroundColor = "#333".uicolor
     tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine
@@ -24,6 +21,7 @@ class AchievementsController < UITableViewController
     puts "AchievementsController > load_data"
 
     return if App::Persistence[:api_url].blank?
+
     @refresh_control.tintColor = "#a6cce6".uicolor
 
     AppHelper.parse_api(:get, "/admin/achievements.json") do |response|
