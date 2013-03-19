@@ -2,18 +2,20 @@ class PourController < UIViewController
   def viewDidLoad
     super
 
-    self.title = "Pour"
     self.view.backgroundColor = :clear.uicolor
-
     self.view = ShadowBox.alloc.initWithFrame(self.view.bounds)
 
-    @beer_image_view = UIImageView.alloc.initWithImage("beer_complete1".uiimage)
-    @beer_image_view.frame = [[8, 8], [106, 176]]
+    @beer_image_view = UIImageView.alloc.initWithImage("pour-beer-8".uiimage)
+    @beer_image_view.frame = [[8, 8], [103, 154]]
     self.view << @beer_image_view
 
     @pour_volume_label = UILabel.alloc.initWithFrame [[0, 0], [728, 191]]
     @pour_volume_label.font = UIFont.boldSystemFontOfSize(72)
     @pour_volume_label.text = "0.0 oz"
+    # @pour_volume_label.textColor = "#a6cce6".uicolor
+    @pour_volume_label.textColor = "#2481c2".uicolor
+    @pour_volume_label.shadowColor = "#111".uicolor
+    @pour_volume_label.shadowOffset = [0, 1]
     @pour_volume_label.textAlignment = UITextAlignmentCenter
     @pour_volume_label.backgroundColor = :clear.uicolor
     self.view << @pour_volume_label
@@ -40,8 +42,8 @@ class PourController < UIViewController
     puts "volume = #{pour[:volume].to_f.round(1)}"
     @pour_volume_label.text = "#{pour[:volume].to_f.round(1)} oz"
 
-    progress = pour[:volume].to_f.round > 15 ? 15 : pour[:volume].to_f.round 
-    @beer_image_view.image = "beer_complete#{progress}".uiimage
+    progress = pour[:volume].to_i > 8 ? 8 : pour[:volume].to_i
+    @beer_image_view.image = "pour-beer-#{progress}".uiimage
   end
   
   def reset_pour
@@ -49,6 +51,6 @@ class PourController < UIViewController
     puts "PourController > reset_pour"
 
     @pour_volume_label.text = "0.0 oz"
-    @beer_image_view.image = "beer_complete1".uiimage
+    @beer_image_view.image = "pour-beer-0".uiimage
   end
 end
