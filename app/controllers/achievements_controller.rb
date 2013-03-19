@@ -4,7 +4,8 @@ class AchievementsController < UITableViewController
 
     @achievements = []
 
-    tableView.backgroundColor = "#333".uicolor
+    tableView.backgroundColor = :clear.uicolor
+    tableView.backgroundView = nil
     tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine
     tableView.separatorColor = "#111".uicolor
 

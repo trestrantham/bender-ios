@@ -68,7 +68,7 @@ class ActivityController < UIViewController
     @achievements_table_view = AchievementsController.alloc.initWithStyle(UITableViewStylePlain)
     @achievements_table_view.view.frame = achievements_view.bounds
     @achievements_table_view.tableView.layer.cornerRadius = 5
-    achievements_view << @achievements_table_view.view
+    achievements_view << @achievements_table_view.tableView
     self.view << achievements_view
 
   end
