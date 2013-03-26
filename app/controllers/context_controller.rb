@@ -10,7 +10,6 @@ class ContextController < UIViewController
     @scroll_view = UIScrollView.alloc.initWithFrame([[0, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT]])
     @scroll_view.delegate = self
     @scroll_view.contentSize = [SCROLL_PAGE_WIDTH * NUM_PAGES, SCROLL_PAGE_HEIGHT]
-    # @scroll_view.backgroundColor = "#333".uicolor
     @scroll_view.scrollsToTop = false
     @scroll_view.bounces = false
     @scroll_view.pagingEnabled = true
@@ -92,7 +91,7 @@ class ContextController < UIViewController
 
   def pour_update(pour)
     if @page_control.currentPage != 0
-      @scroll_view.scrollRectToVisible(@pour_controller.view.frame, animated: true) unless @page_control.currentPage == 0
+      @scroll_view.scrollRectToVisible(self.view.frame, animated: true) unless @page_control.currentPage == 0
       @last_frame = [[SCROLL_PAGE_WIDTH * @page_control.currentPage, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT]]
     end
 
