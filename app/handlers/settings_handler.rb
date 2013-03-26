@@ -13,7 +13,7 @@ class SettingsHandler
       settings.each { |key,val| App::Persistence[key] = val unless key == :api_url }
 
       if validate_settings
-        App.notification_center.post "SettingsChangedNotification"
+        App.notification_center.post "SettingsReloadedNotification"
       else
         App.alert("There is a problem with the settings from the server.")
       end

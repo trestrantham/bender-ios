@@ -35,6 +35,7 @@ class MainController < UIViewController
   def viewDidUnload
     App.notification_center.unobserve @pour_update_observer
     App.notification_center.unobserve @settings_observer
+    App.notification_center.unobserve @settings_changed_observer
     App.notification_center.unobserve @user_timeout_observer
     App.notification_center.unobserve @user_update_observer
 
@@ -46,6 +47,7 @@ class MainController < UIViewController
     @context_view = nil
     @pour_update_observer = nil
     @settings_observer = nil
+    @settings_changed_observer = nil
     @user_timeout_observer = nil
     @user_update_observer = nil
   end
@@ -184,20 +186,16 @@ class MainController < UIViewController
       reset_user(notification.userInfo.symbolize_keys) unless notification.userInfo.nil?
     end
 
-    @settings_observer = App.notification_center.observe "SettingsChangedNotification" do |_|
+    @settings_observer = App.notification_center.observe "SettingsReloadedNotification" do |_|
       reload_data
+    end
+
+    @settings_changed_observer = App.notification_center.observe "SettingsChangedNotification" do |_|
+      @settings_handler.reload_settings
     end
   end
 
 # Handle events
-
-  def reload_settings
-    puts ""
-    puts "MainController > reload_settings"
-
-    # TODO(Tres): reload_data called after this completes via SettingsChangedNotification
-    @settings_handler.reload_settings
-  end
 
   def reload_data
     puts ""

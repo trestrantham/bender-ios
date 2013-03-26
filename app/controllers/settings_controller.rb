@@ -98,9 +98,7 @@ class SettingsController < Formotion::FormController
       if response.ok?
         puts "#{@form_data[:api_url]}"
         App::Persistence[:api_url] = @form_data[:api_url]
-        #AppHelper.reload_settings
-        #@parent_controller.reload_data if @parent_controller
-        @parent_controller.reload_settings
+        App.notification_center.post "SettingsChangedNotification"
         self.dismissModalViewControllerAnimated(true)
       else
         App.alert("Server cannot be reached.")
