@@ -4,7 +4,7 @@ class ContextController < UIViewController
   SCROLL_PAGE_WIDTH = 768
   SCROLL_PAGE_HEIGHT = 231
   PADDING = 20
-  NUM_PAGES = 3
+  NUM_PAGES = 2
 
   def viewDidLoad
     @scroll_view = UIScrollView.alloc.initWithFrame([[0, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT]])
@@ -34,8 +34,8 @@ class ContextController < UIViewController
 
     # @metrics_controller = MetricsController.new #alloc.initWithStyle(UITableViewStyleGrouped, frame: [[0,0],[0,0]])
     # @metrics_controller.view.frame = [[SCROLL_PAGE_WIDTH * 2, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT]]
-    @metrics_controller = ShadowBox.alloc.initWithFrame([[SCROLL_PAGE_WIDTH * 2, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT - PADDING / 2]])
-    @scroll_view << @metrics_controller
+    # @metrics_controller = ShadowBox.alloc.initWithFrame([[SCROLL_PAGE_WIDTH * 2, 0], [SCROLL_PAGE_WIDTH, SCROLL_PAGE_HEIGHT - PADDING / 2]])
+    # @scroll_view << @metrics_controller
 
     self.view << @scroll_view
     self.view << @page_control
