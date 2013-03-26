@@ -19,6 +19,7 @@ class BeerListController < UITableViewController
 
     @refresh_control = UIRefreshControl.new
     @refresh_control.addTarget(self, action: "load_data", forControlEvents: UIControlEventValueChanged)
+    @refresh_control.tintColor = "#2481c2".uicolor
     self.refreshControl = @refresh_control
 
     load_data
@@ -39,6 +40,8 @@ class BeerListController < UITableViewController
 
     return if App::Persistence[:api_url].blank?
 
+    @refresh_control.tintColor = "#a6cce6".uicolor
+
     AppHelper.parse_api(:get, "/kegs.json") do |response|
       # TODO(Tres): Add error checking
       @beers = BW::JSON.parse response.body
@@ -49,6 +52,7 @@ class BeerListController < UITableViewController
 
       tableView.reloadData
       @refresh_control.endRefreshing
+      @refresh_control.tintColor = "#2481c2".uicolor
     end
   end
 
