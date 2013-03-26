@@ -48,7 +48,6 @@ class ContextController < UIViewController
 
     @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
       end_pour
-      @activity_controller.load_data
     end
   end
 

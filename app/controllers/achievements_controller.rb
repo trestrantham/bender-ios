@@ -15,6 +15,16 @@ class AchievementsController < UITableViewController
     self.refreshControl = @refresh_control
 
     load_data
+
+    @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+      load_data
+    end
+  end
+
+  def viewDidUnload
+    App.notification_center.unobserve "PourTimeoutNotification"
+
+    @pour_timeout_observer = nil
   end
 
   def load_data

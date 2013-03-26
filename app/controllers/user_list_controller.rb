@@ -27,9 +27,11 @@ class UserListController < UITableViewController
   def viewDidUnload
     App.notification_center.unobserve "UserCreatedNotification"
     App.notification_center.unobserve "PourTimeoutNotification"
+    App.notification_center.unobserve "RefreshTimeViewsNotification"
 
     @user_created_observer = nil
     @pour_timeout_observer = nil
+    @refresh_time_views_observer = nil
   end
 
   def load_data
