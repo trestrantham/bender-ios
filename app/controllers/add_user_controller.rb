@@ -3,29 +3,29 @@ class AddUserController < Formotion::FormController
   @parent_controller = nil
 
   def init
-    form = Formotion::Form.new({
+    @form = Formotion::Form.new({
       sections: [{
         title: "New User",
         rows: [{
           title: "Name",
           key: :name,
-          placeholder: "Foo",
+          placeholder: "First Last",
           type: :string,
           auto_correction: :no
         }, {
           title: "Email",
           key: :email,
-          placeholder: "foo@bar.baz",
+          placeholder: "bender@collectiveidea.com",
           type: :email,
           auto_correction: :no
         }]
       }]
     })
 
-    form.on_submit do
+    @form.on_submit do
       self.save
     end
-    super.initWithForm(form)
+    super.initWithForm(@form)
   end
 
   def viewDidLoad
@@ -39,7 +39,11 @@ class AddUserController < Formotion::FormController
   def viewDidDisappear(animated)
     super(animated)
 
-    @table_data = nil
+    @form.sections.each do |section|
+      section.rows.each do |row|
+        row.value = ""
+      end
+    end
   end
 
   def save
