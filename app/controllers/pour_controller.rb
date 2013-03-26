@@ -12,7 +12,6 @@ class PourController < UIViewController
     @pour_volume_label = UILabel.alloc.initWithFrame [[0, 0], [728, 191]]
     @pour_volume_label.font = UIFont.boldSystemFontOfSize(72)
     @pour_volume_label.text = "0.0 oz"
-    # @pour_volume_label.textColor = "#a6cce6".uicolor
     @pour_volume_label.textColor = "#2481c2".uicolor
     @pour_volume_label.shadowColor = "#111".uicolor
     @pour_volume_label.shadowOffset = [0, 1]
