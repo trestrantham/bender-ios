@@ -10,16 +10,56 @@ class AppDelegate
     @window.makeKeyAndVisible
 
     if App::Persistence[:api_url].blank? || !AppHelper.valid_url?(App::Persistence[:api_url])
-      @settings ||= SettingsController.new
-      @settings.parent_controller = @main_controller
-      @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings)
-      @settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
-      @main_controller.presentModalViewController(@settings_navigation, animated:false)
+      show_settings
     else
-      @main_controller.reload_settings
+      App.notification_center.post "SettingsReloadedNotification"
+    end
+
+    App.notification_center.observe "FayeConnectNotification" do |notification|
+      hide_model
+    end
+
+    App.notification_center.observe "FayeDisconnectNotification" do |notification|
+      show_modal
+    end
+
+    App.notification_center.observe "FayeCouldNotConnectNotification" do |notification|
+      hide_model
+      App.alert("Could not reconnect to Bender. Please confirm your settings.")
+      show_settings
     end
 
     true
+  end
+
+  def show_settings
+    @settings ||= SettingsController.new
+    @settings.parent_controller = @main_controller
+    @settings_navigation = UINavigationController.alloc.initWithRootViewController(@settings)
+    @settings_navigation.modalPresentationStyle = UIModalPresentationFormSheet
+    @main_controller.presentModalViewController(@settings_navigation, animated:false)
+  end
+
+  def show_modal
+    @modal_view = UIView.alloc.initWithFrame(@window.bounds)
+    @modal_view.opaque = false
+    @modal_view.backgroundColor = UIColor.blackColor.colorWithAlphaComponent(0.75)
+
+    label = UILabel.new
+    label.frame = @window.bounds
+    label.text = "Disconnected from Bender. Attemping to reconnect..."
+    label.textColor = UIColor.whiteColor
+    label.backgroundColor = UIColor.clearColor
+    label.opaque = false
+    label.textAlignment = UITextAlignmentCenter
+    @modal_view << label
+
+    @window << @modal_view
+  end
+
+  def hide_model
+    @modal_view.removeFromSuperview if @modal_view
+    @modal_view = nil
   end
 
   def applicationWillResignActive(application)
@@ -33,9 +73,9 @@ class AppDelegate
 
   def applicationDidEnterBackground(application)
     # Use this method to release shared resources, save user data, invalidate timers, and store enough
-    # application state information to restore your application to its current state in case it is terminated later. 
+    # application state information to restore your application to its current state in case it is terminated later.
     # If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    @main_controller.faye_handler.disconnect   
+    @main_controller.faye_handler.disconnect
   end
 
   def applicationWillEnterForeground(application)

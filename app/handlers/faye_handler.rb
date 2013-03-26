@@ -23,7 +23,11 @@ class FayeHandler
       @faye.delegate = self
     end
 
-    @settings_observer = App.notification_center.observe "SettingsChangedNotification" do |notification|
+    @settings_observer = App.notification_center.observe "SettingsReloadedNotification" do |notification|
+      reconnect
+    end
+
+    @disconnect_observer = App.notification_center.observe "FayeDisconnectNotification" do |notification|
       reconnect
     end
 
@@ -56,6 +60,7 @@ class FayeHandler
     end
 
     # send "could not connect" notification if @retry_count == MAX_RETRY
+    App.notification_center.post "FayeCouldNotConnectNotification" if @retry_count == MAX_RETRY
   end
 
   def reconnect
