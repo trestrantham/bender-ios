@@ -17,7 +17,7 @@ class PourHandler
     @current_pours[pour[:id]] = Time.now
 
     EM.add_timer App::Persistence[:pour_timeout].to_i do
-      if @current_pours[pour[:id]] + App::Persistence[:pour_timeout].to_i <= Time.now
+      if @current_pours.has_key?(pour[:id]) && @current_pours[pour[:id]] + App::Persistence[:pour_timeout].to_i <= Time.now
         puts "PourHandler > pour_update > POUR TIMED OUT"
         App.notification_center.post "PourTimeoutNotification"
 
@@ -38,7 +38,7 @@ class PourHandler
     @current_users[user[:id]] = Time.now
 
     EM.add_timer App::Persistence[:user_timeout].to_i do
-      if @current_users[user[:id]] + App::Persistence[:user_timeout].to_i <= Time.now
+      if @current_users.has_key?(user[:id]) && @current_users[user[:id]] + App::Persistence[:user_timeout].to_i <= Time.now
         puts "PourHandler > user_update > USER TIMED OUT #{user}"
         App.notification_center.post("UserTimeoutNotification", nil, user)
 
