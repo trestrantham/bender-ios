@@ -19,6 +19,7 @@ Motion::Project::App.setup do |app|
   # app.frameworks << "QuartzCore/CALayer"
 
   app.vendor_project 'vendor/JSONKit', :static
+  app.vendor_project 'vendor/MTStatusBarOverlay', :static
   app.vendor_project 'vendor/FayeObjc', :static, cflags: '-fobjc-arc'
 
   app.codesign_certificate = 'iPhone Developer: William Trantham III (3E8KX84744)'
