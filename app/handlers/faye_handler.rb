@@ -1,7 +1,7 @@
 class FayeHandler
   attr_accessor :connected
 
-  MAX_RETRY = 12
+  MAX_RETRY = 18
   RETRY_WAIT = 5
 
   def setup
@@ -28,8 +28,13 @@ class FayeHandler
     end
 
     @disconnect_observer = App.notification_center.observe "FayeDisconnectNotification" do |notification|
-      reconnect
+      connect if disconnected && @retry_count == 0
     end
+
+    @overlay = MTStatusBarOverlay.sharedInstance
+    @overlay.delegate = self
+    @overlay.animation = MTStatusBarOverlayAnimationFallDown
+    @overlay.detailViewMode = MTDetailViewModeHistory
 
     self
   end
@@ -37,6 +42,7 @@ class FayeHandler
   def connect
     puts ""
     puts "FayeHandler > connect"
+    @overlay.postMessage "FayeHandler > connect"
 
     setup unless @faye
 
@@ -51,6 +57,7 @@ class FayeHandler
   def try_connect
     puts ""
     puts "FayeHandler > try_connect > retry_count: #{@retry_count}"
+    @overlay.postMessage "FayeHandler > try_connect > retry_count: #{@retry_count}"
 
     @faye.connectToServer if @faye
     @retry_count = @retry_count + 1
@@ -59,13 +66,13 @@ class FayeHandler
       try_connect if disconnected && @retry_count <= MAX_RETRY
     end
 
-    # send "could not connect" notification if @retry_count == MAX_RETRY
     App.notification_center.post "FayeCouldNotConnectNotification" if @retry_count == MAX_RETRY
   end
 
   def reconnect
     puts ""
     puts "FayeHandler > reconnect"
+    @overlay.postMessage "FayeHandler > reconnect"
 
     disconnect
     setup
@@ -75,6 +82,7 @@ class FayeHandler
   def disconnect
     puts ""
     puts "FayeHandler > disconnect"
+    @overlay.postMessage "FayeHandler > disconnect"
 
     @faye.disconnectFromServer if @faye && @connected
     @faye = nil
@@ -89,6 +97,7 @@ class FayeHandler
 
   def fayeClientError(error)
     puts "Faye Client Error: #{error}"
+    @overlay.postMessage "Faye Client Error: #{error}"
   end
 
   def messageReceived(message, channel:channel)
@@ -101,17 +110,20 @@ class FayeHandler
     puts "FayeHandler > connectedToServer"
     puts "FayeHandler: listening on #{App::Persistence[:faye_url]}..."
 
-    App.notification_center.post "FayeConnectNotification"
-
     @connected = true
     @retry_count = 0
+    @overlay.postMessage "Connected"
+
+    App.notification_center.post "FayeConnectNotification"
   end
 
   def disconnectedFromServer
     puts ""
-    puts "FayeHandler > disconnectedToServer"
+    puts "FayeHandler > disconnectedFromServer"
+
+    @connected = false
+    @overlay.postMessage "Disconnected"
 
     App.notification_center.post "FayeDisconnectNotification"
-    @connected = false
   end
 end

@@ -16,16 +16,17 @@ class AppDelegate
     end
 
     App.notification_center.observe "FayeConnectNotification" do |notification|
-      hide_model
+      hide_model if @modal_view
     end
 
     App.notification_center.observe "FayeDisconnectNotification" do |notification|
-      show_modal
+      puts "In delegate faye disconnect"
+      show_modal unless @modal_view
     end
 
     App.notification_center.observe "FayeCouldNotConnectNotification" do |notification|
-      hide_model
-      App.alert("Could not reconnect to Bender. Please confirm your settings.")
+      hide_model if @modal_view
+      App.alert("Could not connect to Bender. Please confirm your settings.")
       show_settings
     end
 
@@ -54,12 +55,34 @@ class AppDelegate
     label.textAlignment = UITextAlignmentCenter
     @modal_view << label
 
+    button_image = "button".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
+    button_image_selected = "button-selected".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
+
+    button = UIButton.custom
+    button.frame = [[253, 540], [262, 44]]
+    button.setBackgroundImage(button_image, forState: UIControlStateNormal)
+    button.setBackgroundImage(button_image_selected, forState: UIControlStateHighlighted)
+    button.setTitle("Settings", forState: UIControlStateNormal)
+    button.titleLabel.font = :bold.uifont(18)
+    button.titleLabel.shadowColor = "#111".uicolor
+    button.titleLabel.shadowOffset = [0, -2]
+
+    button.on(:touch) do
+      dismiss_modal_show_settings
+    end
+
+    @modal_view << button
     @window << @modal_view
   end
 
   def hide_model
     @modal_view.removeFromSuperview if @modal_view
     @modal_view = nil
+  end
+
+  def dismiss_modal_show_settings
+    hide_model if @modal_view
+    show_settings
   end
 
   def applicationWillResignActive(application)
