@@ -6,10 +6,10 @@ class PourController < UIViewController
     self.view = ShadowBox.alloc.initWithFrame(self.view.bounds)
 
     @beer_image_view = UIImageView.alloc.initWithImage("pour-beer-8".uiimage)
-    @beer_image_view.frame = [[8, 8], [103, 154]]
+    @beer_image_view.frame = [[20, 20], [103, 154]]
     self.view << @beer_image_view
 
-    @pour_volume_label = UILabel.alloc.initWithFrame [[0, 0], [728, 191]]
+    @pour_volume_label = UILabel.alloc.initWithFrame [[150, 20], [262, 162]]
     @pour_volume_label.font = UIFont.boldSystemFontOfSize(72)
     @pour_volume_label.text = "0.0 oz"
     @pour_volume_label.textColor = "#2481c2".uicolor
@@ -19,24 +19,25 @@ class PourController < UIViewController
     @pour_volume_label.backgroundColor = :clear.uicolor
     self.view << @pour_volume_label
 
-    @pour_status_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-    @pour_status_button.setTitle("Done", forState:UIControlStateNormal)
-    @pour_status_button.setTitle("Pour Complete!", forState:UIControlStateDisabled)
-    @pour_status_button.sizeToFit
-    @pour_status_button.center = CGPointMake(self.view.frame.size.width / 2, @pour_volume_label.center.y + 75)
-    self.view << @pour_status_button
+    # Setup our Add Drinker button
+    button_image = "button".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
+    button_image_selected = "button-selected".uiimage.resizableImageWithCapInsets(UIEdgeInsetsMake(22, 7, 23, 7))
 
-    @pour_status_button.enabled = true
-    @pour_status_button.when(UIControlEventTouchUpInside) do
-      App.notification_center.post "PourTimeoutNotification"
-    end
+    @button = UIButton.custom
+    @button.frame = [[445, 20], [262, 162]]
+    @button.setBackgroundImage(button_image, forState: UIControlStateNormal)
+    @button.setBackgroundImage(button_image_selected, forState: UIControlStateHighlighted)
+    @button.setTitle("Done", forState: UIControlStateNormal)
+    @button.titleLabel.font = :bold.uifont(36)
+    @button.titleLabel.shadowColor = "#111".uicolor
+    @button.titleLabel.shadowOffset = [0, -2]
+ 
+    self.view << @button
   end
 
   def update_pour(pour = {})
     puts ''
     puts "PourController > update_pour"
-
-    @pour_status_button.enabled = true
 
     puts "volume = #{pour[:volume].to_f.round(1)}"
     @pour_volume_label.text = "#{pour[:volume].to_f.round(1)} oz"
