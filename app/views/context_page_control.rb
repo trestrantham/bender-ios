@@ -1,4 +1,15 @@
 class ContextPageControl < UIPageControl
+  def init
+    super
+
+    @normal_image ||= "page_control_normal".uiimage
+    @current_image ||= "page_control_current".uiimage
+
+    self.currentPage = 0
+
+    self
+  end
+
   def setCurrentPage(page)
     super
 
@@ -15,14 +26,6 @@ class ContextPageControl < UIPageControl
     super
 
     update_dots
-  end
-
-  def setImageNormal(image)
-    @normal_image ||= image
-  end
-
-  def setImageCurrent(image)
-    @current_image ||= image
   end
 
   def endTrackingWithTouch(touch, withEvent: event)
