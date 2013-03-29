@@ -11,8 +11,11 @@ class BeerCell < UITableViewCell
   TEXT_COLOR = "#333".uicolor
   TEXT_COLOR_LIGHT = "#666".uicolor
   TEXT_COLOR_DARK = "#111".uicolor
-  TEXT_SELECTED_COLOR = "#eee".uicolor
-  TEXT_SELECTED_COLOR_LIGHT = "#a6cce6".uicolor
+  SELECTED_TEXT_COLOR = "#eee".uicolor
+  SELECTED_TEXT_COLOR_LIGHT = "#a6cce6".uicolor
+  SELECTED_BACKGROUND_COLOR = "#2481c2".uicolor
+  EDIT_TEXT_COLOR_LIGHT = "#E6C6AD".uicolor
+  EDIT_BACKGROUND_COLOR = "#C28625".uicolor
 
   @beer_style_text = ""
   @beer_abv_text = ""
@@ -21,6 +24,8 @@ class BeerCell < UITableViewCell
 
   def initWithStyle(style, reuseIdentifier: cell_identifier)
     super
+
+    @selected_background_color = SELECTED_BACKGROUND_COLOR
 
     self.selectionStyle = UITableViewCellSelectionStyleNone
 
@@ -91,22 +96,10 @@ class BeerCell < UITableViewCell
   end
 
   def setSelected(selected, animated: animated)
+    @selected = selected
+
     if selected
-      @container.backgroundColor = "#2481c2".uicolor
-    
-      LABELS.each do |label|
-        instance_variable_get("@#{label}").shadowColor = "#333".uicolor
-        instance_variable_get("@#{label}").shadowOffset = [0, -1]
-        instance_variable_get("@#{label}").textColor = "#eee".uicolor
-      end
-
-      set_beer_style(@beer_style_text, TEXT_SELECTED_COLOR_LIGHT)
-      set_beer_abv(@beer_abv_text, TEXT_SELECTED_COLOR_LIGHT)
-      set_keg_tapped_on(@keg_tapped_on_text, TEXT_SELECTED_COLOR_LIGHT)
-      set_keg_empty_on(@keg_empty_on_text, TEXT_SELECTED_COLOR_LIGHT)
-
-      @keg_volume_remaining_label.textColor = TEXT_SELECTED_COLOR_LIGHT
-      @keg_volume_poured_label.textColor = TEXT_SELECTED_COLOR_LIGHT
+      set_selected_colors
     else
       @container.backgroundColor = "#ddd".uicolor
 
@@ -124,6 +117,24 @@ class BeerCell < UITableViewCell
       @keg_volume_remaining_label.textColor = TEXT_COLOR_LIGHT
       @keg_volume_poured_label.textColor = TEXT_COLOR_LIGHT
     end
+  end
+
+  def set_selected_colors
+    @container.backgroundColor = @selected_background_color
+  
+    LABELS.each do |label|
+      instance_variable_get("@#{label}").shadowColor = "#333".uicolor
+      instance_variable_get("@#{label}").shadowOffset = [0, -1]
+      instance_variable_get("@#{label}").textColor = "#eee".uicolor
+    end
+
+    set_beer_style(@beer_style_text, @selected_text_color_light)
+    set_beer_abv(@beer_abv_text, @selected_text_color_light)
+    set_keg_tapped_on(@keg_tapped_on_text, @selected_text_color_light)
+    set_keg_empty_on(@keg_empty_on_text, @selected_text_color_light)
+
+    @keg_volume_remaining_label.textColor = @selected_text_color_light
+    @keg_volume_poured_label.textColor = @selected_text_color_light
   end
 
   def set_beer_style(text, color = TEXT_COLOR_LIGHT)
@@ -162,5 +173,22 @@ class BeerCell < UITableViewCell
     @container.layer.shadowRadius = 8 
     @container.clipsToBounds = false
     @container.layer.masksToBounds = false
+  end
+
+  def set_mode(mode = :normal)
+    puts ""
+    puts "BeerCell > set_mode: mode = #{mode}"
+
+    if mode == :edit
+      @selected_background_color = EDIT_BACKGROUND_COLOR
+      @selected_text_color_light = EDIT_TEXT_COLOR_LIGHT
+    else
+      @selected_background_color = SELECTED_BACKGROUND_COLOR
+      @selected_text_color_light = SELECTED_TEXT_COLOR_LIGHT
+    end
+
+    if @selected
+      set_selected_colors
+    end
   end
 end

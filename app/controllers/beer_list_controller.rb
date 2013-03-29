@@ -5,6 +5,8 @@ class BeerListController < UITableViewController
     super
 
     self.title = "On Tap"
+
+    @current_mode = :normal
     @beers = []
     @beers_index_hash = {}
     @index_path = nil
@@ -56,8 +58,12 @@ class BeerListController < UITableViewController
     end
   end
 
-  def select_beer(pour)
+  def select_beer(pour, mode = :normal)
+    puts ""
+    puts "BeerListController > select_beer: mode = #{mode}"
     section = 0 # change if we use sectioned list of beers
+
+    @current_mode = mode
 
     @index_path = NSIndexPath.indexPathForRow(@beers_index_hash[pour[:beer_tap_id].to_i].to_i, inSection: section)
 
@@ -65,8 +71,10 @@ class BeerListController < UITableViewController
                          animated: false,
                    scrollPosition: UITableViewScrollPositionNone)
 
+    update_selected_colors(mode, @index_path)
+
     tableView.scrollToRowAtIndexPath(@index_path, 
-                   atScrollPosition: UITableViewScrollPositionNone,
+                   atScrollPosition: UITableViewScrollPositionTop,
                            animated: true)
   end
 
@@ -74,8 +82,22 @@ class BeerListController < UITableViewController
     puts ""
     puts "BeerListController > reset_beer"
 
+    @current_mode = :normal
+
     tableView.deselectRowAtIndexPath(tableView.indexPathForSelectedRow, animated: true)
     @index_path = nil
+  end
+
+  def update_selected_colors(mode, index_path)
+    if index_path
+      cell = tableView.cellForRowAtIndexPath(index_path)
+      cell.set_mode(mode) if cell
+    end
+
+    tableView.indexPathsForVisibleRows.each do |ip|
+      cell = tableView.cellForRowAtIndexPath(ip)
+      cell.set_mode(mode) if cell
+    end
   end
 
   def numberOfSectionsInTableView(tableView)
@@ -92,6 +114,8 @@ class BeerListController < UITableViewController
     cell = tableView.dequeueReusableCellWithIdentifier(@reuse_identifier) || begin
       BeerCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
+
+    cell.set_mode(@current_mode)
 
     beer = @beers[index_path.row]
     cell.beer_name.text = beer[:name]

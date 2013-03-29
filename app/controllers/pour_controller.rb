@@ -33,7 +33,7 @@ class PourController < UIViewController
     @button.titleLabel.font = :bold.uifont(36)
     @button.titleLabel.shadowColor = "#111".uicolor
     @button.titleLabel.shadowOffset = [0, -2]
- 
+
     self.view << @button
   end
 
@@ -47,7 +47,7 @@ class PourController < UIViewController
     progress = pour[:volume].to_i > 8 ? 8 : pour[:volume].to_i
     @beer_image_view.image = "pour-beer-#{progress}".uiimage
   end
-  
+
   def reset_pour
     puts ""
     puts "PourController > reset_pour"

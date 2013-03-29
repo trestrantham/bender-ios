@@ -250,7 +250,7 @@ class MainController < UIViewController
     @current_user_id = pour.fetch(:user_id, 0).to_i
 
     @beers_controller.popToRootViewControllerAnimated(false)
-    # @beers_controller.topViewController.select_beer(@current_pour, @current_mode)
+    @beers_controller.topViewController.select_beer(@current_pour, @current_mode)
 
     @users_controller.popToRootViewControllerAnimated(false)
     @users_controller.topViewController.update_user(@current_user_id, @current_mode)
