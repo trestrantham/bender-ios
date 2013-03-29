@@ -4,7 +4,7 @@ class RecentActivityController < UITableViewController
   def viewDidLoad
     super
 
-    @recent_activity = []
+    @recent_pours = []
 
     tableView.backgroundColor = :clear.uicolor
     tableView.backgroundView = nil
@@ -41,8 +41,8 @@ class RecentActivityController < UITableViewController
     @refresh_control.tintColor = "#a6cce6".uicolor
 
     AppHelper.parse_api(:get, "/activity/recent.json") do |response|
-      @recent_activity = BW::JSON.parse response.body
-      puts "#{@recent_activity}"
+      @recent_pours = BW::JSON.parse response.body
+      puts "#{@recent_pours}"
 
       tableView.reloadData
       @refresh_control.endRefreshing
@@ -63,7 +63,7 @@ class RecentActivityController < UITableViewController
   end
 
   def tableView(table_view, numberOfRowsInSection: section)
-    @recent_activity.size
+    @recent_pours.size
   end
 
   def tableView(table_view, cellForRowAtIndexPath: index_path)
@@ -84,7 +84,7 @@ class RecentActivityController < UITableViewController
     line_view.backgroundColor = "#494949".uicolor
     cell << line_view
 
-    activity = @recent_activity[index_path.row]
+    activity = @recent_pours[index_path.row]
 
     split = activity[:user_name].split
     user_name = split[0]
@@ -103,5 +103,6 @@ class RecentActivityController < UITableViewController
 
   def tableView(table_view, didSelectRowAtIndexPath:index_path)
     table_view.deselectRowAtIndexPath(index_path, animated: true)
+    App.notification_center.post("PourEditNotification", nil, @recent_pours[index_path.row])
   end
 end

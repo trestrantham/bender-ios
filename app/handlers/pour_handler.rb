@@ -52,7 +52,7 @@ class PourHandler
     puts "PourHandler > update_pour_user"
 
     # Don't see guest updates
-    return unless user_id.to_i > 0
+    # return unless user_id.to_i > 0
 
     pour_user = { pour: { user_id: user_id } }
 

@@ -3,6 +3,8 @@ class UserListController < UITableViewController
     super
 
     self.title = "Drinkers"
+
+    @current_mode = :normal
     @users = []
     @users_index_hash = {}
 
@@ -43,7 +45,7 @@ class UserListController < UITableViewController
 
     AppHelper.parse_api(:get, "/users.json") do |response|
       # TODO(Tres): Add error checking
-      @users = BW::JSON.parse response.body 
+      @users = BW::JSON.parse response.body
 
       # Move Guest user to top
       guest = @users.select { |user| user[:id].to_i == 0 }
@@ -60,18 +62,18 @@ class UserListController < UITableViewController
       @refresh_control.tintColor = "#2481c2".uicolor
     end
   end
-  
+
   def refresh_time_views
     puts "refreshing user list times"
-      
+
     selected_row = tableView.indexPathForSelectedRow
-    tableView.reloadRowsAtIndexPaths(tableView.indexPathsForVisibleRows, withRowAnimation: UITableViewRowAnimationNone)      
+    tableView.reloadRowsAtIndexPaths(tableView.indexPathsForVisibleRows, withRowAnimation: UITableViewRowAnimationNone)
     tableView.selectRowAtIndexPath(selected_row, animated: false, scrollPosition: UITableViewScrollPositionNone) if selected_row
   end
 
   def setup_observers
     @user_created_observer = App.notification_center.observe "UserCreatedNotification" do |_|
-      load_data      
+      load_data
     end
 
     @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
@@ -83,15 +85,19 @@ class UserListController < UITableViewController
     end
   end
 
-  def update_user(user_id)
+  def update_user(user_id, mode = :normal)
     puts ""
     puts "UserListController > update_user: #{user_id}"
+
+    @current_mode = mode
 
     @index_path = NSIndexPath.indexPathForRow(@users_index_hash[user_id], inSection: 0)
 
     tableView.selectRowAtIndexPath(@index_path,
                          animated: false,
-                   scrollPosition: UITableViewScrollPositionNone)
+                   scrollPosition: UITableViewScrollPositionTop)
+
+    update_selected_colors(mode, @index_path)
 
     App.notification_center.post("UserUpdatedNotification", nil, @users[@users_index_hash[user_id]])
   end
@@ -100,12 +106,27 @@ class UserListController < UITableViewController
     puts ""
     puts "UserListController > reset_user: #{user_id}"
 
+    @current_mode = :normal
+    update_selected_colors(@current_mode, nil)
+
     index = @users_index_hash.fetch(user_id.to_i, 0)
     row = tableView.indexPathForSelectedRow.nil? ? nil : tableView.indexPathForSelectedRow.row
 
     if index == row
       tableView.deselectRowAtIndexPath(tableView.indexPathForSelectedRow, animated: true)
       @index_path = nil
+    end
+  end
+
+  def update_selected_colors(mode, index_path)
+    if index_path
+      cell = tableView.cellForRowAtIndexPath(index_path)
+      cell.set_mode(mode) if cell
+    end
+
+    tableView.indexPathsForVisibleRows.each do |ip|
+      cell = tableView.cellForRowAtIndexPath(ip)
+      cell.set_mode(mode) if cell
     end
   end
 
@@ -124,10 +145,13 @@ class UserListController < UITableViewController
       UserCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuse_identifier)
     end
 
+    cell.set_mode(@current_mode)
+
     user = @users[index_path.row]
 
     cell.user_name.text = user[:name]
-    cell.set_user_email(user[:email])
+    cell.user_image_view.setImageWithURL(AppHelper.generate_gravatar_url(user.fetch(:email, "")).nsurl,
+                                         placeholderImage: "user1".uiimage)
 
     cell.last_drink.text = if user[:last_pour_at].nil?
                               "New drinker on #{AppHelper.parse_date_string(user[:created_at], 'yyyy-MM-dd\'T\'HH:mm:ssz', 'MMM d, yyyy')}"
@@ -138,10 +162,12 @@ class UserListController < UITableViewController
     cell.show_shadow(:top) if index_path.row == 0
     cell.show_shadow(:bottom) if index_path.row == @users.size - 1
 
+    cell.set_mode(@current_mode)
+
     cell
   end
 
-  def tableView(tableView, didSelectRowAtIndexPath:index_path)
+  def tableView(tableView, didSelectRowAtIndexPath: index_path)
     if @index_path == tableView.indexPathForSelectedRow
       tableView.deselectRowAtIndexPath(index_path, animated: true) 
       @index_path = nil

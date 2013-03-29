@@ -1,19 +1,24 @@
 class UserCell < UITableViewCell
-  attr_accessor :user_name, :last_drink
+  attr_accessor :user_name, :last_drink, :user_image_view
 
   CELL_WIDTH = 300
   CELL_HEIGHT = 66
   IMAGE_SIZE = 50
   PADDING = 8
 
-  TEXT_SELECTED_COLOR_LIGHT = "#a6cce6".uicolor
-  BACKGROUND_SELECTED_COLOR = "#2481c2".uicolor
+  TEXT_COLOR_LIGHT = "#a6cce6".uicolor
+  BACKGROUND_COLOR = "#2481c2".uicolor
+  SELECTED_TEXT_COLOR_LIGHT = "#a6cce6".uicolor
+  SELECTED_BACKGROUND_COLOR = "#2481c2".uicolor
+  EDIT_TEXT_COLOR_LIGHT = "#E6C6AD".uicolor
+  EDIT_BACKGROUND_COLOR = "#C28625".uicolor
 
   def initWithStyle(style, reuseIdentifier: cell_identifier)
     super
 
-    self.selectionStyle = UITableViewCellSelectionStyleNone
+    @selected_background_color = SELECTED_BACKGROUND_COLOR
 
+    self.selectionStyle = UITableViewCellSelectionStyleNone
     self.textColor = "#eee".uicolor
 
     # Create a container to hold all our cell views and to set a background color
@@ -42,9 +47,9 @@ class UserCell < UITableViewCell
     @user_image_view.layer.shadowOpacity = 1
     @user_image_view.layer.shadowRadius = 0
 
-    @user_name = UILabel.alloc.initWithFrame([[IMAGE_SIZE + PADDING * 2, 
-                                               PADDING * 2], 
-                                              [CELL_WIDTH - IMAGE_SIZE + PADDING * 3, 
+    @user_name = UILabel.alloc.initWithFrame([[IMAGE_SIZE + PADDING * 2,
+                                               PADDING * 2],
+                                              [CELL_WIDTH - IMAGE_SIZE + PADDING * 3,
                                                20]])
     @user_name.font = :bold.uifont(18)
     @user_name.textColor = "#eee".uicolor
@@ -53,9 +58,9 @@ class UserCell < UITableViewCell
     @user_name.shadowColor = "#111".uicolor
     @user_name.shadowOffset = [0, -1]
 
-    @last_drink = UILabel.alloc.initWithFrame([[IMAGE_SIZE + PADDING * 2, 
-                                                CELL_HEIGHT - PADDING * 2 - 18], 
-                                               [CELL_WIDTH - IMAGE_SIZE + PADDING * 3, 
+    @last_drink = UILabel.alloc.initWithFrame([[IMAGE_SIZE + PADDING * 2,
+                                                CELL_HEIGHT - PADDING * 2 - 18],
+                                               [CELL_WIDTH - IMAGE_SIZE + PADDING * 3,
                                                 20]])
     @last_drink.font = :system.uifont(12)
     @last_drink.textColor = "#999".uicolor
@@ -72,14 +77,19 @@ class UserCell < UITableViewCell
   end
 
   def setSelected(selected, animated: animated)
+    puts ""
+    puts "UserCell > setSelected"
+
+    @selected = selected
+
     if selected
-      @container.backgroundColor = BACKGROUND_SELECTED_COLOR
-    
+      @container.backgroundColor = @selected_background_color
+
       [:user_name, :last_drink].each do |label|
         instance_variable_get("@#{label}").shadowColor = "#333".uicolor
       end
 
-      @last_drink.textColor = TEXT_SELECTED_COLOR_LIGHT
+      @last_drink.textColor = @selected_text_color_light
     else
       @container.backgroundColor = "#333".uicolor
 
@@ -116,5 +126,23 @@ class UserCell < UITableViewCell
     self.layer.shadowOpacity = 1
     self.layer.shadowRadius = 1 
     self.clipsToBounds = false
+  end
+
+  def set_mode(mode = :normal)
+    puts ""
+    puts "UserCell > set_mode: mode = #{mode}"
+
+    if mode == :edit
+      @selected_background_color = EDIT_BACKGROUND_COLOR
+      @selected_text_color_light = EDIT_TEXT_COLOR_LIGHT
+    else
+      @selected_background_color = SELECTED_BACKGROUND_COLOR
+      @selected_text_color_light = SELECTED_TEXT_COLOR_LIGHT
+    end
+
+    if @selected
+      @container.backgroundColor = @selected_background_color
+      @last_drink.textColor = @selected_text_color_light
+    end
   end
 end

@@ -17,11 +17,8 @@ class ContextController < UIViewController
     @scroll_view.showsVerticalScrollIndicator = false
 
     @page_control = ContextPageControl.alloc.init
-    @page_control.setImageNormal "page_control_normal".uiimage
-    @page_control.setImageCurrent "page_control_current".uiimage
     @page_control.frame = [[0, SCROLL_PAGE_HEIGHT], [768, 10]]
     @page_control.numberOfPages = NUM_PAGES
-    @page_control.currentPage = 0
     @page_control.addTarget(self, action: "change_page", forControlEvents: UIControlEventValueChanged)
 
     @pour_controller = PourController.new
@@ -43,28 +40,53 @@ class ContextController < UIViewController
     @page_control_used = false
 
     @pour_update_observer = App.notification_center.observe "PourUpdateNotification" do |notification|
+      puts "ContextController > received PourUpdateNotification"
       pour_update(notification.userInfo.symbolize_keys) unless notification.userInfo.nil?
     end
 
-    @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+    @pour_update_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+      puts "ContextController > received PourTimeoutNotification"
       end_pour
+    end
+
+    @pour_edit_observer = App.notification_center.observe "PourEditNotification" do |notification|
+      puts "ContextController > received PourEditNotification"
+      @pour_controller.set_mode(:edit)
+      pour_update(notification.userInfo.symbolize_keys) unless notification.userInfo.nil?
+    end
+
+    @pour_edit_save_observer = App.notification_center.observe "PourEditSavedNotification" do |_|
+      puts "ContextController > received PourEditSavedNotification"
+      end_pour
+      @pour_controller.set_mode(:normal)
+    end
+
+    @pour_edit_cancel_observer = App.notification_center.observe "PourEditCanceledNotification" do |_|
+      puts "ContextController > received PourEditCanceledNotification"
+      end_pour
+      @pour_controller.set_mode(:normal)
     end
   end
 
   def viewDidUnload
     App.notification_center.unobserve @pour_update_observer
-    App.notification_center.unobserve @pour_timeout_observer
+    App.notification_center.unobserve @pour_edit_observer
+    App.notification_center.unobserve @pour_edit_cancel_observer
+    App.notification_center.unobserve @pour_update_timeout_observer
     @pour_update_observer = nil
-    @pour_timeout_observer = nil
+    @pour_edit_observer = nil
+    @pour_update_timeout_observer = nil
+    @pour_edit_cancel_observer = nil
   end
 
   def scrollViewDidScroll(scroll_view)
-    return if @page_control_used
-
     page_width = @scroll_view.frame.size.width
-    frational_page = ((@scroll_view.contentOffset.x - page_width / 2) / page_width).floor + 1
-    page = frational_page.round
-    @page_control.currentPage = page
+    fractional_page = ((@scroll_view.contentOffset.x - page_width / 2) / page_width).floor + 1
+    page = fractional_page.round
+
+    notify_cancel_edit if @page_control.currentPage == 0 && @page_control.currentPage != page
+
+    @page_control.currentPage = page unless @page_control_used
   end
 
   def scrollViewWillBeginDragging(scroll_view)
@@ -106,5 +128,10 @@ class ContextController < UIViewController
 
   def reload_data
     @activity_controller.load_data
+  end
+
+  def notify_cancel_edit
+    puts "ContextController > notify_cancel_edit: PourEditCanceledNotification"
+    App.notification_center.post "PourEditCanceledNotification"
   end
 end

@@ -2,6 +2,8 @@ class PourController < UIViewController
   def viewDidLoad
     super
 
+    @current_mode = :normal
+
     self.view.backgroundColor = :clear.uicolor
     self.view = ShadowBox.alloc.initWithFrame(self.view.bounds)
 
@@ -52,5 +54,27 @@ class PourController < UIViewController
 
     @pour_volume_label.text = "0.0 oz"
     @beer_image_view.image = "pour-beer-0".uiimage
+  end
+
+  def set_mode(mode = :normal)
+    puts ""
+    puts "PourController > set_mode: #{mode}"
+    @current_mode = mode
+
+    if @current_mode == :edit
+      @button.off(:touch)
+      @button.on(:touch) do
+        App.notification_center.post "PourEditSavedNotification"
+      end
+
+      @button.setTitle("Save", forState: UIControlStateNormal)
+    else
+      @button.off(:touch)
+      @button.on(:touch) do
+        App.notification_center.post "PourTimeoutNotification"
+      end
+
+      @button.setTitle("Done", forState: UIControlStateNormal)
+    end
   end
 end

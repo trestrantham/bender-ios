@@ -14,6 +14,7 @@ class MainController < UIViewController
 
     @current_pour = nil
     @current_user_id = nil
+    @current_mode = :normal
 
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
     self.view.backgroundColor = "#444".uicolor
@@ -38,6 +39,7 @@ class MainController < UIViewController
     App.notification_center.unobserve @settings_changed_observer
     App.notification_center.unobserve @user_timeout_observer
     App.notification_center.unobserve @user_update_observer
+    App.notification_center.unobserve @pour_edit_observer
 
     @beers_controller = nil
     @users_controller = nil
@@ -50,6 +52,7 @@ class MainController < UIViewController
     @settings_changed_observer = nil
     @user_timeout_observer = nil
     @user_update_observer = nil
+    @pour_edit_observer = nil
   end
 
 # Setup
@@ -183,7 +186,7 @@ class MainController < UIViewController
     end
 
     @user_timeout_observer = App.notification_center.observe "UserTimeoutNotification" do |notification|
-      reset_user(notification.userInfo.symbolize_keys) unless notification.userInfo.nil?
+      reset_user(notification.userInfo.symbolize_keys) unless notification.userInfo.nil? || @current_mode == :edit
     end
 
     @settings_observer = App.notification_center.observe "SettingsReloadedNotification" do |_|
@@ -192,6 +195,21 @@ class MainController < UIViewController
 
     @settings_changed_observer = App.notification_center.observe "SettingsChangedNotification" do |_|
       @settings_handler.reload_settings
+    end
+
+    @pour_edit_observer = App.notification_center.observe "PourEditNotification" do |notification|
+      @current_mode = :edit
+      pour_edit(notification.userInfo.symbolize_keys) unless notification.userInfo.nil?
+    end
+
+    @pour_edit_saved_observer = App.notification_center.observe "PourEditSavedNotification" do |_|
+      pour_edit_save
+      @current_mode = :normal
+    end
+
+    @pour_edit_canceled_observer = App.notification_center.observe "PourEditCanceledNotification" do |_|
+      pour_edit_cancel
+      @current_mode = :normal
     end
   end
 
@@ -217,22 +235,57 @@ class MainController < UIViewController
 
     @pour_handler.pour_update(@current_pour, @current_user_id)
 
-    # TODO(Tres): Only perform pops if not already current view controler
     @beers_controller.popToRootViewControllerAnimated(false)
-    @beers_controller.topViewController.select_beer(pour)
+    @beers_controller.topViewController.select_beer(@current_pour)
 
     @users_controller.popToRootViewControllerAnimated(false)
     @users_controller.topViewController.update_user(@current_user_id)
+  end
+
+  def pour_edit(pour)
+    puts ""
+    puts "MainController > pour_edit: current_mode = #{@current_mode}"
+
+    @current_pour = pour
+    @current_user_id = pour.fetch(:user_id, 0).to_i
+
+    @beers_controller.popToRootViewControllerAnimated(false)
+    # @beers_controller.topViewController.select_beer(@current_pour, @current_mode)
+
+    @users_controller.popToRootViewControllerAnimated(false)
+    @users_controller.topViewController.update_user(@current_user_id, @current_mode)
+  end
+
+  def pour_edit_save
+    puts ""
+    puts "MainController > pour_edit_save: current_user_id = #{@current_user_id} | current_pour[:id] = #{@current_pour[:id]}"
+
+    if !@current_user_id.nil? && @current_pour && @current_pour.has_key?(:id)
+      puts "MainController > pour_edit_save > updating user"
+      @pour_handler.update_pour_user(@current_pour[:id], @current_user_id)
+    end
+  end
+
+  def pour_edit_cancel
+    puts ""
+    puts "MainController > pour_edit_cancel"
+
+    if !@current_user_id.nil? && @current_pour && @current_pour.has_key?(:id)
+      reset_user({ id: @current_user_id })
+      end_pour
+    end
   end
 
   def user_update(user)
     puts ""
     puts "MainController > user_update"
 
-    if user.has_key?(:id)
-      @current_user_id = user[:id].to_i 
-      puts "MainController > user_update: setting current_user_id to #{@current_user_id}"
+    return unless user.has_key?(:id)
 
+    @current_user_id = user[:id].to_i 
+    puts "MainController > user_update: setting current_user_id to #{@current_user_id}"
+
+    unless @current_mode == :edit
       @pour_handler.user_update(user)
 
       unless @current_pour.nil? || user[:id].to_i == @current_pour.fetch(:user_id, 0).to_i
