@@ -31,10 +31,11 @@ class FayeHandler
       connect if disconnected && @retry_count == 0
     end
 
-    @overlay = MTStatusBarOverlay.sharedInstance
-    @overlay.delegate = self
-    @overlay.animation = MTStatusBarOverlayAnimationFallDown
-    @overlay.detailViewMode = MTDetailViewModeHistory
+    # @overlay = MTStatusBarOverlay.sharedInstance
+    # @overlay.delegate = self
+    # @overlay.animation = MTStatusBarOverlayAnimationFallDown
+    # @overlay.historyEnabled = true
+    # @overlay.detailViewMode = MTDetailViewModeHistory
 
     self
   end
@@ -42,7 +43,7 @@ class FayeHandler
   def connect
     puts ""
     puts "FayeHandler > connect"
-    @overlay.postMessage "FayeHandler > connect"
+    @overlay.postMessage "FayeHandler > connect" if @overlay
 
     setup unless @faye
 
@@ -57,7 +58,7 @@ class FayeHandler
   def try_connect
     puts ""
     puts "FayeHandler > try_connect > retry_count: #{@retry_count}"
-    @overlay.postMessage "FayeHandler > try_connect > retry_count: #{@retry_count}"
+    @overlay.postMessage "FayeHandler > try_connect > retry_count: #{@retry_count}" if @overlay
 
     @faye.connectToServer if @faye
     @retry_count = @retry_count + 1
@@ -72,7 +73,7 @@ class FayeHandler
   def reconnect
     puts ""
     puts "FayeHandler > reconnect"
-    @overlay.postMessage "FayeHandler > reconnect"
+    @overlay.postMessage "FayeHandler > reconnect" if @overlay
 
     disconnect
     setup
@@ -82,7 +83,7 @@ class FayeHandler
   def disconnect
     puts ""
     puts "FayeHandler > disconnect"
-    @overlay.postMessage "FayeHandler > disconnect"
+    @overlay.postMessage "FayeHandler > disconnect" if @overlay
 
     @faye.disconnectFromServer if @faye && @connected
     @faye = nil
@@ -97,7 +98,7 @@ class FayeHandler
 
   def fayeClientError(error)
     puts "Faye Client Error: #{error}"
-    @overlay.postMessage "Faye Client Error: #{error}"
+    @overlay.postMessage "Faye Client Error: #{error}" if @overlay
   end
 
   def messageReceived(message, channel:channel)
@@ -113,7 +114,7 @@ class FayeHandler
 
     @connected = true
     @retry_count = 0
-    @overlay.postMessage "Connected"
+    @overlay.postMessage "Connected" if @overlay
 
     App.notification_center.post "FayeConnectNotification"
   end
@@ -123,7 +124,7 @@ class FayeHandler
     puts "FayeHandler > disconnectedFromServer"
 
     @connected = false
-    @overlay.postMessage "Disconnected"
+    @overlay.postMessage "Disconnected" if @overlay
 
     App.notification_center.post "FayeDisconnectNotification"
   end
