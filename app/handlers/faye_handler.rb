@@ -101,6 +101,7 @@ class FayeHandler
   end
 
   def messageReceived(message, channel:channel)
+    puts "FayeHandler > messageReceived: #{message}"
     App.notification_center.post("PourUpdateNotification", nil, message) if channel.to_s == "/pour/update"
     App.notification_center.post("PourUpdateNotification", nil, message) if channel.to_s == "/pour/complete"
   end
