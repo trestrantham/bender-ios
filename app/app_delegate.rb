@@ -68,7 +68,8 @@ class AppDelegate
     button.titleLabel.shadowOffset = [0, -2]
 
     button.on(:touch) do
-      dismiss_modal_show_settings
+      hide_model if @modal_view
+      show_settings
     end
 
     @modal_view << button
@@ -78,11 +79,6 @@ class AppDelegate
   def hide_model
     @modal_view.removeFromSuperview if @modal_view
     @modal_view = nil
-  end
-
-  def dismiss_modal_show_settings
-    hide_model if @modal_view
-    show_settings
   end
 
   def applicationWillResignActive(application)

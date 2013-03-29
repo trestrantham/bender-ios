@@ -47,6 +47,7 @@ class SettingsController < Formotion::FormController
     form.on_submit do
       self.save
     end
+
     super.initWithForm(form)
   end
 
@@ -60,7 +61,8 @@ class SettingsController < Formotion::FormController
 
   def viewDidDisappear(animated)
     super(animated)
-    @table_data = nil
+
+    @form_data = nil
   end
 
   def save

@@ -25,14 +25,20 @@ class RecentActivityController < UITableViewController
     @refresh_time_views_observer = App.notification_center.observe "RefreshTimeViewsNotification" do |_|
       refresh_time_views
     end
+
+    @pour_user_updated_observer = App.notification_center.observe "PourUserUpdatedNotification" do |_|
+      load_data
+    end
   end
 
   def viewDidUnload
     App.notification_center.unobserve "PourTimeoutNotification"
     App.notification_center.unobserve "RefreshTimeViewsNotification"
+    App.notification_center.unobserve "PourUserUpdatedNotification"
 
     @pour_timeout_observer = nil
     @refresh_time_views_observer = nil
+    @pour_user_updated_observer = nil
   end
 
   def load_data

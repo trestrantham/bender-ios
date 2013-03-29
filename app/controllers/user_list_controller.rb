@@ -29,10 +29,12 @@ class UserListController < UITableViewController
   def viewDidUnload
     App.notification_center.unobserve "UserCreatedNotification"
     App.notification_center.unobserve "PourTimeoutNotification"
+    App.notification_center.unobserve "PourUserUpdatedNotification"
     App.notification_center.unobserve "RefreshTimeViewsNotification"
 
     @user_created_observer = nil
     @pour_timeout_observer = nil
+    @pour_user_updated_observer = nil
     @refresh_time_views_observer = nil
   end
 
@@ -73,14 +75,22 @@ class UserListController < UITableViewController
 
   def setup_observers
     @user_created_observer = App.notification_center.observe "UserCreatedNotification" do |_|
+      puts "UserListController > received UserCreatedNotification"
       load_data
     end
 
     @pour_timeout_observer = App.notification_center.observe "PourTimeoutNotification" do |_|
+      puts "UserListController > received PourTimeoutNotification"
+      load_data
+    end
+
+    @pour_user_updated_observer = App.notification_center.observe "PourUserUpdatedNotification" do |_|
+      puts "UserListController > received PourUserUpdatedNotification"
       load_data
     end
 
     @refresh_time_views_observer = App.notification_center.observe "RefreshTimeViewsNotification" do |_|
+      puts "UserListController > received RefreshTimeViewsNotification"
       refresh_time_views
     end
   end
@@ -98,6 +108,10 @@ class UserListController < UITableViewController
                    scrollPosition: UITableViewScrollPositionTop)
 
     update_selected_colors(mode, @index_path)
+
+    tableView.scrollToRowAtIndexPath(@index_path,
+                   atScrollPosition: UITableViewScrollPositionTop,
+                           animated: true)
 
     App.notification_center.post("UserUpdatedNotification", nil, @users[@users_index_hash[user_id]])
   end
@@ -150,8 +164,7 @@ class UserListController < UITableViewController
     user = @users[index_path.row]
 
     cell.user_name.text = user[:name]
-    cell.user_image_view.setImageWithURL(AppHelper.generate_gravatar_url(user.fetch(:email, "")).nsurl,
-                                         placeholderImage: "user1".uiimage)
+    cell.set_user_email(user[:email])
 
     cell.last_drink.text = if user[:last_pour_at].nil?
                               "New drinker on #{AppHelper.parse_date_string(user[:created_at], 'yyyy-MM-dd\'T\'HH:mm:ssz', 'MMM d, yyyy')}"
@@ -162,14 +175,12 @@ class UserListController < UITableViewController
     cell.show_shadow(:top) if index_path.row == 0
     cell.show_shadow(:bottom) if index_path.row == @users.size - 1
 
-    cell.set_mode(@current_mode)
-
     cell
   end
 
   def tableView(tableView, didSelectRowAtIndexPath: index_path)
     if @index_path == tableView.indexPathForSelectedRow
-      tableView.deselectRowAtIndexPath(index_path, animated: true) 
+      tableView.deselectRowAtIndexPath(index_path, animated: true)
       @index_path = nil
     else
       @index_path = index_path
