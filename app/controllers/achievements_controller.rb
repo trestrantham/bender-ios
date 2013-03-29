@@ -65,14 +65,15 @@ class AchievementsController < UITableViewController
     cell.user_name.text = @achievements[index_path.row][:user_name]
 
     value = @achievements[index_path.row][:value]
-    cell.value.text = case @achievements[index_path.row][:value_type]
-                      when "decimal"
-                        "#{value.to_f.round(1)} oz".upcase
-                      when "integer"
-                        "#{value.to_f.round(0)}"
-                      when "time"
-                        "#{value.split(":").last.to_f.round(1)} seconds".upcase
-                      end
+    # cell.value.text = case @achievements[index_path.row][:value_type]
+    #                   when "decimal"
+    #                     "#{value.to_f.round(1)} oz".upcase
+    #                   when "integer"
+    #                     "#{value.to_f.round(0)}"
+    #                   when "time"
+    #                     "#{value.split(":").last.to_f.round(1)} seconds".upcase
+    #                   end
+    cell.value.text = @achievements[index_path.row][:value]
 
     cell
   end
