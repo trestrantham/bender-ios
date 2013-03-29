@@ -17,7 +17,8 @@ class AddUserController < Formotion::FormController
           key: :email,
           placeholder: "bender@collectiveidea.com",
           type: :email,
-          auto_correction: :none
+          auto_correction: :no,
+          auto_capitalization: :none
         }]
       }]
     })
