@@ -54,6 +54,15 @@ module AppHelper
       end
     end
   end
+
+  def generate_gravatar_url(email, image_size = 50)
+    cleansed_email = email.gsub(/\s+/,"").downcase if email
+
+    return "" unless cleansed_email
+
+    digest = RmDigest::MD5.hexdigest(cleansed_email)
+    "http://www.gravatar.com/avatar/#{digest}?s=#{image_size}"
+  end
 end
 
 class NSDictionary
