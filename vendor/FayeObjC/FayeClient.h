@@ -30,8 +30,8 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#import "JSONKit.h"
-#import "SRWebSocket.h"
+#import "JSONKit/JSONKit.h"
+#import "SocketRocket/SRWebSocket.h"
 
 enum _fayeStates {
   kWebSocketDisconnected,

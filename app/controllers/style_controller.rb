@@ -2,7 +2,7 @@ class StyleController < NSObject
   def self.apply_style
     # Grab our navbar appearance
     nav_bar_appearance = UINavigationBar.appearance
-    
+
     # Setup our navbar background images
     nav_bar_image = "navbar".uiimage
     nav_bar_image = nav_bar_image.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 20, 0, 20))
@@ -15,6 +15,7 @@ class StyleController < NSObject
                         UITextAttributeTextShadowOffset => NSValue.valueWithUIOffset(UIOffsetMake(0, 1))
                         # UITextAttributeFont => :bold.uifont(20)
     }
+
     nav_bar_appearance.setTitleTextAttributes(text_attributes)
   end
 end

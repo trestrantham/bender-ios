@@ -15,7 +15,7 @@
 //
 
 #import "NSData+SRB64Additions.h"
-/* #import "base64.h" */
+#import "base64.h"
 
 
 @implementation NSData (SRB64Additions)

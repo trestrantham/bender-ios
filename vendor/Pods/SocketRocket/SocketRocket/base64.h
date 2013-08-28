@@ -1,4 +1,3 @@
-//
 //   Copyright 2012 Square Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +13,22 @@
 //   limitations under the License.
 //
 
-#import "NSData+SRB64Additions.h"
-/* #import "base64.h" */
+
+#ifndef SocketRocket_base64_h
+#define SocketRocket_base64_h
+
+#include <sys/types.h>
+
+extern int
+b64_ntop(u_char const *src,
+         size_t srclength,
+         char *target,
+         size_t targsize);
+
+extern int
+b64_pton(char const *src,
+         u_char *target, 
+         size_t targsize);
 
 
-@implementation NSData (SRB64Additions)
-
-- (NSString *)SR_stringByBase64Encoding;
-{
-    size_t buffer_size = (([self length] * 3 + 2) / 2);
-    
-    char *buffer = (char *)malloc(buffer_size);
-    
-    int len = b64_ntop([self bytes], [self length], buffer, buffer_size);
-    
-    if (len == -1) {
-        free(buffer);
-        return nil;
-    } else{
-        return [[NSString alloc] initWithBytesNoCopy:buffer length:len encoding:NSUTF8StringEncoding freeWhenDone:YES];
-    }
-}
-
-@end
+#endif
